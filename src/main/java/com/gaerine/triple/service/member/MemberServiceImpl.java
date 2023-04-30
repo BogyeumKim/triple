@@ -23,4 +23,10 @@ public class MemberServiceImpl implements MemberService{
         mapper.save(mb);
         return mb;
     }
+
+    @Override
+    public Member socialRegister(Member mb) {
+        mapper.socialSave(mb);
+        return mb;
+    }
 }

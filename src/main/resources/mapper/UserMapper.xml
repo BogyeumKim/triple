@@ -6,4 +6,8 @@
     <insert id="save"  useGeneratedKeys="true" keyProperty="member_id">
         insert into member (user_id,user_pw,user_nick) values (#{user_id},#{user_pw},#{user_nick});
     </insert>
+
+    <insert id="socialSave"  useGeneratedKeys="true" keyProperty="member_id">
+        insert into member (user_id,user_pw,user_nick,social_id) values (#{user_id},#{user_pw},#{user_nick},#{social_id});
+    </insert>
 </mapper>

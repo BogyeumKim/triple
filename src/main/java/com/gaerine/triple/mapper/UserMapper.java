@@ -8,6 +8,8 @@ import org.apache.ibatis.annotations.Select;
 public interface UserMapper {
     void save(Member mb);
 
+    void socialSave(Member mb);
+
     @Select("select * from member where member_id=#{member_id}")
     Member getMember(Long mbId);
 }

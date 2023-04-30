@@ -7,7 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @Controller
 @Slf4j
@@ -19,8 +22,9 @@ public class MemberController {
 
     // register.html 이동
     @GetMapping("/register")
-    public String moveReg(){
-        log.info("move...");
+    public String moveReg(Model model){
+        String state = UUID.randomUUID().toString();
+        model.addAttribute("state",state);
         return "member/register";
     }
 

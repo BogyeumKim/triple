@@ -13,9 +13,13 @@
     유저 닉넴 : <input type="text" id="regUserNick">
     </br>
     <button type="button" id="subBtn">회원 가입</button>
+    </br>
+    <button onclick="showPopUp()">
+        <img th:src="@{/img/naverLoginBtn.png}" width="200" height="50">
+    </button>
 
 </body>
-<script>
+<script th:inline="javascript">
 
   const subBtn = document.getElementById("subBtn");
   subBtn.addEventListener("click",registerFetch);
@@ -34,6 +38,23 @@
             }).catch(error => console.error(error))
 
   }
+
+
+
+  /*<![CDATA[*/
+  function showPopUp(){
+      var state = [[${state}]];
+      console.log(state);
+      const uri = 'https://nid.naver.com/oauth2.0/authorize?' +
+          'response_type=code' +
+          '&client_id=nPHj7peh5QV2gkYPN7Xv' +
+          '&state='+state +
+          '&redirect_uri=http://localhost:8080/login';
+
+
+      window.open(uri, "팝업 테스트", "width=400, height=300, top=10, left=10");
+  }
+  /*]]>*/
 
 </script>
 </html>

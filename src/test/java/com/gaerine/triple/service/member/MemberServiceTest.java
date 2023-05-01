@@ -39,4 +39,18 @@ class MemberServiceTest {
         service.register(mb);
 
     }
+
+    @Test
+    void login() {
+        //given
+            String id = "test1";
+            String pw = "asdasd";
+
+        //when
+        Optional<Member> login = service.login(id, pw);
+        log.info("login={}",login);
+
+        //then
+        Assertions.assertThat(login).isPresent();
+    }
 }

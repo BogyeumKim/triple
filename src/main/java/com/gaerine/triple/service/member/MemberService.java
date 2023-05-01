@@ -13,4 +13,6 @@ public interface MemberService {
     Optional<String> findById(String userId);
 
     Optional<String> findBySocialId(String userId);
+
+    Optional<Member> login(String userId,String userPw);
 }

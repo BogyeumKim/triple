@@ -2,6 +2,7 @@ package com.gaerine.triple.mapper;
 
 import com.gaerine.triple.domain.member.Member;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.Optional;
@@ -17,4 +18,7 @@ public interface UserMapper {
 
     @Select("select social_id from member where social_id=#{id}")
     Optional<String> getSocialId(String soocialId);
+
+    @Select("select * from member where user_id=#{id} and user_pw=#{pw}")
+    Member getMemberInfo(@Param("id") String userId, @Param("pw") String userPw);
 }

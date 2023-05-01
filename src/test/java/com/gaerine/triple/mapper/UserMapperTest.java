@@ -33,7 +33,16 @@ class UserMapperTest {
 
 
     @Test
-    void getMember() {
+    void getMemberId() {
         log.info("member={}",mapper.getMemberId("테스터"));
+    }
+
+    @Test
+    void getMemberInfo() {
+        Member mb = new Member();
+        mb.setUser_id("test1");
+        mb.setUser_pw("test1");
+
+        log.info("member={}",mapper.getMemberInfo(mb.getUser_id(),mb.getUser_pw()));
     }
 }

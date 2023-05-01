@@ -17,6 +17,12 @@ public class MemberServiceImpl implements MemberService{
     private final UserMapper mapper;
 
     @Override
+    public Optional<Member> login(String userId, String userPw) {
+        Optional<Member> memberInfo = Optional.ofNullable(mapper.getMemberInfo(userId, userPw));
+        return memberInfo;
+    }
+
+    @Override
     public Optional<String> findById(String userId) {
         return mapper.getMemberId(userId);
     }

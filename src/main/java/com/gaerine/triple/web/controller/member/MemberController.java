@@ -1,4 +1,4 @@
-package com.gaerine.triple.controller;
+package com.gaerine.triple.web.controller.member;
 
 import com.gaerine.triple.domain.member.Member;
 import com.gaerine.triple.service.member.MemberService;
@@ -27,5 +27,6 @@ public class MemberController {
         log.info("newMember={}",newMember);
         return newMember.getMember_id() != null ? ResponseEntity.status(HttpStatus.CREATED).build() : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
+
 
 }

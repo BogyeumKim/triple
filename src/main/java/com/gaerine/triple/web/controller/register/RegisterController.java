@@ -1,4 +1,4 @@
-package com.gaerine.triple.controller;
+package com.gaerine.triple.web.controller.register;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Controller
 @Slf4j
-public class RestViewController {
+public class RegisterController {
 
     // register.html 이동
     @GetMapping("/member/register")

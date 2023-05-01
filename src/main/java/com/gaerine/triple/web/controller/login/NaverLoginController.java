@@ -1,4 +1,4 @@
-package com.gaerine.triple.controller;
+package com.gaerine.triple.web.controller.login;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;

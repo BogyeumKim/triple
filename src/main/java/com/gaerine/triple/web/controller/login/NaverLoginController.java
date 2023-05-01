@@ -26,7 +26,7 @@ public class NaverLoginController {
 
     private final MemberService service;
 
-    @GetMapping("/login")
+    @GetMapping("/outh2/naver/login")
     @ResponseBody
     public ResponseEntity<String> callback(@RequestParam Map<String, String> val, HttpServletResponse response) throws IOException {
         log.info("val={}",val);

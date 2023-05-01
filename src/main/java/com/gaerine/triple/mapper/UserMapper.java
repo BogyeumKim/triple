@@ -16,5 +16,5 @@ public interface UserMapper {
     Optional<String> getMemberId(String userId);
 
     @Select("select social_id from member where social_id=#{id}")
-    Optional<String> getSocialId(String userId);
+    Optional<String> getSocialId(String soocialId);
 }

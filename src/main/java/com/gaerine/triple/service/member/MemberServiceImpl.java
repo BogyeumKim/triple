@@ -22,8 +22,8 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public Optional<String> findBySocialId(String userId) {
-        return mapper.getSocialId(userId);
+    public Optional<String> findBySocialId(String socialId) {
+        return mapper.getSocialId(socialId);
     }
 
     @Override

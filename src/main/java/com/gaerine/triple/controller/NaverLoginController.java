@@ -1,19 +1,22 @@
 package com.gaerine.triple.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaerine.triple.domain.member.Member;
 import com.gaerine.triple.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Map;
 
 @Controller
@@ -25,7 +28,7 @@ public class NaverLoginController {
 
     @GetMapping("/login")
     @ResponseBody
-    public String callback(@RequestParam Map<String, String> val){
+    public ResponseEntity<String> callback(@RequestParam Map<String, String> val, HttpServletResponse response) throws IOException {
         log.info("val={}",val);
 
 
@@ -48,9 +51,9 @@ public class NaverLoginController {
         Map<String,Object> getNaverData = getAcc.get().uri(uriBuilder -> uriBuilder.build()).retrieve().bodyToMono(Map.class).block();
         log.info("Data={}",getNaverData);
 
-        Object response = getNaverData.get("response");
+        Object responseObj = getNaverData.get("response");
         ObjectMapper mapper = new ObjectMapper();
-        Map<String,String> getNaverUser = mapper.convertValue(response, Map.class);
+        Map<String,String> getNaverUser = mapper.convertValue(responseObj, Map.class);
 
         Member member = new Member();
         member.setUser_id(getNaverUser.get("email"));
@@ -59,6 +62,14 @@ public class NaverLoginController {
         member.setSocial_id(getNaverUser.get("id"));
 
         service.socialRegister(member);
-        return "OK";
+
+        if(getNaverData.get("message").equals("success")){
+            String closePu ="<script>window.opener.postMessage('naverLoginSuccess','*');</script>";
+            response.getWriter().write(closePu);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } else{
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
     }
 }

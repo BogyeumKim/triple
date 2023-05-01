@@ -44,15 +44,25 @@
   /*<![CDATA[*/
   function showPopUp(){
       var state = [[${state}]];
-      console.log(state);
+
       const uri = 'https://nid.naver.com/oauth2.0/authorize?' +
           'response_type=code' +
           '&client_id=nPHj7peh5QV2gkYPN7Xv' +
           '&state='+state +
           '&redirect_uri=http://localhost:8080/login';
 
+      var popup = window.open(uri, "팝업 테스트", "width=400, height=300, top=10, left=10");
 
-      window.open(uri, "팝업 테스트", "width=400, height=300, top=10, left=10");
+      window.addEventListener('message',function (event){
+          if(event.data === 'naverLoginSuccess'){
+              popup.close();
+              window.location.href = 'http://localhost:8080/';
+              alert("가입 성공!");
+          }else {
+              popup.close();
+              alert("가입 실패 ㅠ");
+          }
+      });
   }
   /*]]>*/
 

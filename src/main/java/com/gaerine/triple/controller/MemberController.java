@@ -34,7 +34,7 @@ public class MemberController {
     public ResponseEntity<String> signUp(@RequestBody Member member){
         Member newMember = service.register(member);
         log.info("newMember={}",newMember);
-        return newMember.getMember_id() !=0 ? ResponseEntity.status(HttpStatus.CREATED).build() : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        return newMember.getMember_id() != null ? ResponseEntity.status(HttpStatus.CREATED).build() : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
 }

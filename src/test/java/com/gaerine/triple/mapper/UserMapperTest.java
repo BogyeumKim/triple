@@ -34,7 +34,6 @@ class UserMapperTest {
 
     @Test
     void getMember() {
-        Long mbId=1L;
-        log.info("member={}",mapper.getMember(mbId));
+        log.info("member={}",mapper.getMemberId("테스터"));
     }
 }

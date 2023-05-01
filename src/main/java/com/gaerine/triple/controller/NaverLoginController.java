@@ -55,19 +55,26 @@ public class NaverLoginController {
         ObjectMapper mapper = new ObjectMapper();
         Map<String,String> getNaverUser = mapper.convertValue(responseObj, Map.class);
 
-        Member member = new Member();
-        member.setUser_id(getNaverUser.get("email"));
-        member.setUser_pw("");
-        member.setUser_nick(getNaverUser.get("nickname"));
-        member.setSocial_id(getNaverUser.get("id"));
-
-        service.socialRegister(member);
+        Member socialMember = service.socialRegister(getNaverUser);
+        log.info("socialMember={}",socialMember);
 
         if(getNaverData.get("message").equals("success")){
-            String closePu ="<script>window.opener.postMessage('naverLoginSuccess','*');</script>";
+
+            String closePu;
+            // 신규가입
+            if(socialMember.getMember_id() != null) {
+                closePu ="<script>window.opener.postMessage('naverRegSuccess','*');</script>";
+            }
+            // 기존 회원
+            else {
+                closePu ="<script>window.opener.postMessage('naverLoginSuccess','*');</script>";
+            }
+
             response.getWriter().write(closePu);
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } else{
+            String closePu ="<script>window.opener.postMessage('naverLoginFail','*');</script>";
+            response.getWriter().write(closePu);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 

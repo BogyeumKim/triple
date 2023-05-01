@@ -10,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -29,11 +31,12 @@ class MemberServiceTest {
         mb.setUser_pw("비번");
 
         // when
-        Member register = service.register(mb);
-        log.info("mb={}",mb);
+        Optional<String> byId = service.findById(mb.getUser_id());
+        log.info("byid={}",byId);
 
         // then
-        Member byId = service.findById(mb.getMember_id());
-        Assertions.assertThat(register).isEqualTo(byId);
+        Assertions.assertThat(byId).isNull();
+        service.register(mb);
+
     }
 }

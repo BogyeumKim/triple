@@ -54,11 +54,15 @@
       var popup = window.open(uri, "팝업 테스트", "width=400, height=300, top=10, left=10");
 
       window.addEventListener('message',function (event){
+          console.log(event);
           if(event.data === 'naverLoginSuccess'){
               popup.close();
-              window.location.href = 'http://localhost:8080/';
+              alert("로긴 성공!");
+          }else if (event.data ==='naverRegSuccess'){
+              popup.close();
               alert("가입 성공!");
-          }else {
+          }
+          else {
               popup.close();
               alert("가입 실패 ㅠ");
           }

@@ -4,6 +4,7 @@ package com.gaerine.triple.web.controller.login;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaerine.triple.domain.member.Member;
 import com.gaerine.triple.service.member.MemberService;
+import com.gaerine.triple.web.SessionConst;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -15,9 +16,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @Slf4j
@@ -28,9 +32,8 @@ public class NaverLoginController {
 
     @GetMapping("/outh2/naver/login")
     @ResponseBody
-    public ResponseEntity<String> callback(@RequestParam Map<String, String> val, HttpServletResponse response) throws IOException {
+    public ResponseEntity<String> callback(@RequestParam Map<String, String> val, HttpServletResponse response, HttpServletRequest request) throws IOException {
         log.info("val={}",val);
-
 
         WebClient webToken = WebClient.builder().baseUrl("https://nid.naver.com/oauth2.0/token").build();
 
@@ -44,6 +47,7 @@ public class NaverLoginController {
         ).retrieve().bodyToMono(Map.class).block();
         log.info("Token={}",getToken);
 
+
         WebClient getAcc = WebClient.builder().baseUrl("https://openapi.naver.com/v1/nid/me")
                 .defaultHeader(HttpHeaders.AUTHORIZATION,"Bearer "+getToken.get("access_token"))
                 .build();
@@ -55,18 +59,23 @@ public class NaverLoginController {
         ObjectMapper mapper = new ObjectMapper();
         Map<String,String> getNaverUser = mapper.convertValue(responseObj, Map.class);
 
-        Member socialMember = service.socialRegister(getNaverUser);
-        log.info("socialMember={}",socialMember);
+        Optional<String> findId = service.findBySocialId(getNaverUser.get("id"));
 
         if(getNaverData.get("message").equals("success")){
 
             String closePu;
             // 신규가입
-            if(socialMember.getMember_id() != null) {
+            if(findId.isEmpty()) {
+                service.socialRegister(getNaverUser);
                 closePu ="<script>window.opener.postMessage('naverRegSuccess','*');</script>";
             }
             // 기존 회원
             else {
+                Optional<Member> socialMember = service.socialLogin(getNaverUser.get("id"));
+
+                HttpSession session = request.getSession();
+                session.setAttribute(SessionConst.LOGIN_MEMBER,socialMember);
+
                 closePu ="<script>window.opener.postMessage('naverLoginSuccess','*');</script>";
             }
 

@@ -21,4 +21,7 @@ public interface UserMapper {
 
     @Select("select * from member where user_id=#{id} and user_pw=#{pw}")
     Member getMemberInfo(@Param("id") String userId, @Param("pw") String userPw);
+
+    @Select("select * from member where social_id=#{id}")
+    Member getSocailMemberInfo(String socialId);
 }

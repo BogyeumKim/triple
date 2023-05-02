@@ -21,6 +21,12 @@ public class MemberServiceImpl implements MemberService{
     private final UserMapper mapper;
 
     @Override
+    public Optional<Member> socialLogin(String socialId) {
+        Optional<Member> memberInfo = Optional.ofNullable(mapper.getSocailMemberInfo(socialId));
+        return memberInfo;
+    }
+
+    @Override
     public Optional<Member> login(LoginVO vo) {
         Optional<Member> memberInfo = Optional.ofNullable(mapper.getMemberInfo(vo.getUser_id(),vo.getUser_pw()));
         return memberInfo;

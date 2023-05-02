@@ -38,11 +38,11 @@ class UserMapperTest {
     }
 
     @Test
-    void getMemberInfo() {
+    void getMemberLogin() {
         Member mb = new Member();
         mb.setUser_id("test1");
         mb.setUser_pw("test1");
 
-        log.info("member={}",mapper.getMemberInfo(mb.getUser_id(),mb.getUser_pw()));
+        log.info("member={}",mapper.getMemberLogin(mb.getUser_id(),mb.getUser_pw()));
     }
 }

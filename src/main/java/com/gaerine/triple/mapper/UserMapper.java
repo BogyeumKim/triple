@@ -20,8 +20,8 @@ public interface UserMapper {
     Optional<String> getSocialId(String soocialId);
 
     @Select("select * from member where user_id=#{id} and user_pw=#{pw}")
-    Member getMemberInfo(@Param("id") String userId, @Param("pw") String userPw);
+    Member getMemberLogin(@Param("id") String userId, @Param("pw") String userPw);
 
     @Select("select * from member where social_id=#{id}")
-    Member getSocailMemberInfo(String socialId);
+    Member getMemberSocialLogin(String socialId);
 }

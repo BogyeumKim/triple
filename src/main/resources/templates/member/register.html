@@ -72,20 +72,21 @@
 
       var popup = window.open(uri, "팝업 테스트", "width=400, height=300, top=10, left=10");
 
-      window.addEventListener('message',function (event){
+      function popupCallback(event) {
           console.log(event);
-          if(event.data === 'naverLoginSuccess'){
+          if (event.data === "naverLoginSuccess") {
               popup.close();
               alert("로긴 성공!");
-          }else if (event.data ==='naverRegSuccess'){
+          } else if (event.data === "naverRegSuccess") {
               popup.close();
               alert("가입 성공!");
-          }
-          else {
+          } else {
               popup.close();
               alert("가입 실패 ㅠ");
           }
-      });
+          window.removeEventListener("message", popupCallback);
+      }
+      window.addEventListener("message", popupCallback);
   }
   /*]]>*/
 

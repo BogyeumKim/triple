@@ -5,6 +5,7 @@ import com.gaerine.triple.domain.member.Member;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 
 public interface MemberService {
     Member register(Member mb);
@@ -18,4 +19,6 @@ public interface MemberService {
     Optional<Member> login(LoginVO vo);
 
     Optional<Member> socialLogin(String socialId);
+
+    Member readMember(Long id);
 }

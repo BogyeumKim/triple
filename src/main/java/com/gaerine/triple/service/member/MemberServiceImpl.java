@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +20,11 @@ import java.util.Optional;
 public class MemberServiceImpl implements MemberService{
 
     private final UserMapper mapper;
+
+    @Override
+    public Member readMember(Long id) {
+        return mapper.getMember(id);
+    }
 
     @Override
     public Optional<Member> socialLogin(String socialId) {

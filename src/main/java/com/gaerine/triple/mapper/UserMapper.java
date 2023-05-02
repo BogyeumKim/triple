@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Mapper
 public interface UserMapper {
@@ -24,4 +25,7 @@ public interface UserMapper {
 
     @Select("select * from member where social_id=#{id}")
     Member getMemberSocialLogin(String socialId);
+
+    @Select("select * from member where member_id=#{id}")
+    Member getMember(Long Id);
 }

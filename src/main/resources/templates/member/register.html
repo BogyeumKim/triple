@@ -13,16 +13,35 @@
     유저 닉넴 : <input type="text" id="regUserNick">
     </br>
     <button type="button" id="subBtn">회원 가입</button>
+    <button type="button" id="loginBtn">로그인</button>
     </br>
     <button onclick="showPopUp()">
         <img th:src="@{/img/naverLoginBtn.png}" width="200" height="50">
     </button>
+
 
 </body>
 <script th:inline="javascript">
 
   const subBtn = document.getElementById("subBtn");
   subBtn.addEventListener("click",registerFetch);
+
+  const loginBtn = document.getElementById("loginBtn");
+  loginBtn.addEventListener("click",loginFetch);
+
+  function loginFetch(){
+      const user_id = document.getElementById("regUserId").value;
+      const user_pw = document.getElementById("regUserPw").value;
+      const url = '/login';
+      const data = JSON.stringify({user_id,user_pw});
+      console.log(data)
+      fetch(url,{method : "POST" , body:data,headers:{'Content-Type': 'application/json'}})
+          .then( response =>{
+              response.status === 200 ? alert("로그인 성공!") : alert("로그인 실패ㅠ")
+              console.log(response)
+          }).catch(error => console.error(error))
+  }
+
 
   function registerFetch(){
       const user_id = document.getElementById("regUserId").value;

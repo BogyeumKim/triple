@@ -39,7 +39,9 @@
           .then( response =>{
               response.status === 200 ? alert("로그인 성공!") : alert("로그인 실패ㅠ")
               console.log(response)
-          }).catch(error => console.error(error))
+              return response.json();
+          }).then(login => console.log(login))
+          .catch(error => console.error(error))
   }
 
 
@@ -52,9 +54,16 @@
       console.log(data)
       fetch(url,{method : "POST" , body:data,headers:{'Content-Type': 'application/json'}})
             .then( response =>{
-                response.status === 201 ? alert("회원가입 완료!") : alert("회원가입 실패ㅠ")
-              console.log(response)
-            }).catch(error => console.error(error))
+                console.log(response)
+                if(response.status === 201){
+                    alert("회원가입 완료!");
+                    return response.json(); // Response 객체를 JSON 형태로 파싱하여 반환
+                }else {
+                    alert("회원가입 실패ㅠ");
+                    throw new Error('회원가입 실패');
+                }
+            }).then(data => { console.log(data)})
+          .catch(error => console.error(error))
 
   }
 

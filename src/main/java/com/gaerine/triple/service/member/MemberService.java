@@ -1,5 +1,6 @@
 package com.gaerine.triple.service.member;
 
+import com.gaerine.triple.domain.login.LoginVO;
 import com.gaerine.triple.domain.member.Member;
 
 import java.util.Map;
@@ -14,5 +15,5 @@ public interface MemberService {
 
     Optional<String> findBySocialId(String userId);
 
-    Optional<Member> login(String userId,String userPw);
+    Optional<Member> login(LoginVO vo);
 }

@@ -1,5 +1,6 @@
 package com.gaerine.triple.service.member;
 
+import com.gaerine.triple.domain.login.LoginVO;
 import com.gaerine.triple.domain.member.Member;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
@@ -43,11 +44,12 @@ class MemberServiceTest {
     @Test
     void login() {
         //given
-            String id = "test1";
-            String pw = "asdasd";
+        LoginVO vo = new LoginVO();
+        vo.setUser_id("test1");
+        vo.setUser_pw("test1");
 
         //when
-        Optional<Member> login = service.login(id, pw);
+        Optional<Member> login = service.login(vo);
         log.info("login={}",login);
 
         //then

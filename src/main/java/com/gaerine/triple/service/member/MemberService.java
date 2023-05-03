@@ -21,4 +21,6 @@ public interface MemberService {
     Optional<Member> socialLogin(String socialId);
 
     Member readMember(Long id);
+
+    int removeMember(Long id);
 }

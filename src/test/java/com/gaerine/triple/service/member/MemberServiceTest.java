@@ -55,4 +55,15 @@ class MemberServiceTest {
         //then
         Assertions.assertThat(login).isPresent();
     }
+
+    @Test
+    void removeMember() {
+        // given
+        Long id = 39L;
+        // when
+        int result = service.removeMember(id);
+        // then
+        log.info("delete={}",result);
+
+    }
 }

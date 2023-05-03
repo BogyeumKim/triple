@@ -22,6 +22,11 @@ public class MemberServiceImpl implements MemberService{
     private final UserMapper mapper;
 
     @Override
+    public int removeMember(Long id) {
+        return mapper.deleteMember(id);
+    }
+
+    @Override
     public Member readMember(Long id) {
         return mapper.getMember(id);
     }

@@ -1,6 +1,7 @@
 package com.gaerine.triple.mapper;
 
 import com.gaerine.triple.domain.member.Member;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -28,4 +29,7 @@ public interface UserMapper {
 
     @Select("select * from member where member_id=#{id}")
     Member getMember(Long Id);
+
+    @Delete("delete from member where member_id=#{id}")
+    int deleteMember(Long id);
 }

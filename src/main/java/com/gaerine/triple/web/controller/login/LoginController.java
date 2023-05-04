@@ -3,10 +3,14 @@ package com.gaerine.triple.web.controller.login;
 
 import com.gaerine.triple.domain.login.LoginVO;
 import com.gaerine.triple.domain.member.Member;
+import com.gaerine.triple.domain.token.Token;
 import com.gaerine.triple.service.member.MemberService;
+import com.gaerine.triple.service.token.TokenService;
 import com.gaerine.triple.web.SessionConst;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,21 +23,28 @@ import java.util.Optional;
 
 @RestController
 @Slf4j
-@RequiredArgsConstructor
 public class LoginController {
 
-    private final MemberService service;
+    private final MemberService memberService;
+    private final TokenService tokenService;
+
+    @Autowired
+    public LoginController(MemberService memberService, TokenService tokenService) {
+        this.memberService = memberService;
+        this.tokenService = tokenService;
+    }
 
     @PostMapping("/login")
-    public ResponseEntity<Member> login(@RequestBody LoginVO login, HttpServletRequest req){
-        log.info("login={}",login);
-        Optional<Member> loginMember = service.login(login);
+    public ResponseEntity<Member> login(@RequestBody LoginVO login) {
+        log.info("login={}", login);
+        Optional<Member> loginMember = memberService.login(login);
 
-        if(loginMember.isPresent()){
-            HttpSession session = req.getSession();
-            session.setAttribute(SessionConst.LOGIN_MEMBER,loginMember);
-            log.info("session={}",session.getAttribute(SessionConst.LOGIN_MEMBER));
+        HttpHeaders headers = null;
+        if (loginMember.isPresent()) {
+            Token token = tokenService.saveToken(loginMember.get().getMember_id());
+            headers = new HttpHeaders();
+            headers.setBearerAuth(token.getAccess_token());
         }
-        return loginMember.isPresent() ? new ResponseEntity<>(loginMember.get(), HttpStatus.OK) : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        return loginMember.isPresent() ? new ResponseEntity<>(headers, HttpStatus.OK) : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }

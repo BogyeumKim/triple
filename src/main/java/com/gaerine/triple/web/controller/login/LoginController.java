@@ -41,10 +41,18 @@ public class LoginController {
 
         HttpHeaders headers = null;
         if (loginMember.isPresent()) {
-            Token token = tokenService.saveToken(loginMember.get().getMember_id());
+            Token token = null;
+            Token tokenById = tokenService.getTokenById(loginMember.get().getMember_id());
+
+            if(tokenById == null){
+                token = tokenService.saveToken(loginMember.get().getMember_id()); // token 없으면 새로 저장
+            }else{
+                token = tokenService.getToken(tokenById.getAccess_token()); // 기존에 token이 있고 만료시간 지나도 알아서 갱신
+            }
             headers = new HttpHeaders();
             headers.setBearerAuth(token.getAccess_token());
         }
+
         return loginMember.isPresent() ? new ResponseEntity<>(headers, HttpStatus.OK) : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }

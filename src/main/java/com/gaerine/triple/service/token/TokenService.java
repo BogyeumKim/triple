@@ -12,4 +12,6 @@ public interface TokenService {
     int modifyToken(String newToken,String oldToken);
 
     int modifyCreatedDate(Date date,String token);
+
+    Token getTokenById(Long id);
 }

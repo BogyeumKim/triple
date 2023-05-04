@@ -21,4 +21,7 @@ public interface TokenMapper {
 
     @Update("update token set created_date=#{newDate} where access_token=#{token}")
     int updateCreatedDate(@Param("newDate") Date date,@Param("token") String token);
+
+    @Select("select * from token where member_id=#{id}")
+    Token selectTokenById(Long id);
 }

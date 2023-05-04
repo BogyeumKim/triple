@@ -20,6 +20,11 @@ public class TokenServiceImpl implements TokenService{
     private final TokenMapper mapper;
 
     @Override
+    public Token getTokenById(Long id) {
+        return mapper.selectTokenById(id);
+    }
+
+    @Override
     public int modifyCreatedDate(Date date, String token) {
         return mapper.updateCreatedDate(date,token);
     }
@@ -55,7 +60,6 @@ public class TokenServiceImpl implements TokenService{
                 }
         }
 
-        log.info("UPDATE TOKEN... ={}",getToken);
         return getToken;
     }
 

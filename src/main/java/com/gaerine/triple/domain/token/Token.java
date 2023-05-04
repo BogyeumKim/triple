@@ -15,4 +15,5 @@ public class Token {
     private String access_token;
     private String refresh_token;
     private Date created_date;
+    private Date update_date;
 }

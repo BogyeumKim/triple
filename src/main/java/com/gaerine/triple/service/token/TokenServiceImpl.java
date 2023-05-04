@@ -1,11 +1,15 @@
 package com.gaerine.triple.service.token;
 
+import com.gaerine.triple.domain.token.Expires;
 import com.gaerine.triple.domain.token.Token;
 import com.gaerine.triple.mapper.TokenMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.UUID;
 
 @Service
@@ -16,6 +20,46 @@ public class TokenServiceImpl implements TokenService{
     private final TokenMapper mapper;
 
     @Override
+    public int modifyCreatedDate(Date date, String token) {
+        return mapper.updateCreatedDate(date,token);
+    }
+
+    @Override
+    public int modifyToken(String newToken, String oldToken) {
+        return mapper.updateToken(newToken, oldToken);
+    }
+
+    @Override
+    public Token getToken(String token) {
+        Token getToken = mapper.selectToken(token);
+
+        Date getTokenDate = null;
+        if(getToken.getUpdate_date() == null ){
+            getTokenDate = getToken.getCreated_date();
+        } else {
+            getTokenDate = getToken.getUpdate_date();
+        }
+
+        // Date to LocalDateTime and plus expires
+        LocalDateTime expriesDate = LocalDateTime.ofInstant(getTokenDate.toInstant(), ZoneId.systemDefault()).plusSeconds(Expires.EXPIRES_IN);
+        log.info("expriesDate={}",expriesDate);
+        boolean result = LocalDateTime.now().isAfter(expriesDate);
+
+        // if Token expires
+        if(result == true) {
+            log.info("expires Token....");
+            String newToken = UUID.randomUUID().toString();
+            int modifyResult = modifyToken(newToken, token);/* update access_Token , update_date*/
+                if(modifyResult == 1 ){
+                    getToken.setAccess_token(newToken);
+                }
+        }
+
+        log.info("UPDATE TOKEN... ={}",getToken);
+        return getToken;
+    }
+
+    @Override
     public Token saveToken(Long memberId) {
         String accessToken = UUID.randomUUID().toString();
         String refreshToken = UUID.randomUUID().toString();
@@ -24,6 +68,7 @@ public class TokenServiceImpl implements TokenService{
         token.setAccess_token(accessToken);
         token.setRefresh_token(refreshToken);
         token.setMember_id(memberId);
+        token.setCreated_date(new Date());
 
         int result = mapper.insertToken(token);
         log.info("token={}",token);

@@ -37,6 +37,9 @@ public class TokenServiceImpl implements TokenService{
     @Override
     public Token getToken(String token) {
         Token getToken = mapper.selectToken(token);
+        if(getToken == null){
+            return null;
+        }
 
         Date getTokenDate = null;
         if(getToken.getUpdate_date() == null ){

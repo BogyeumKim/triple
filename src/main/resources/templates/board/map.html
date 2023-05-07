@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>주소 검색</title>
+</head>
+<body>
+
+    장소검색 : <input type="text" id="place" ><button onclick="requestMapAPI()">검색</button>
+
+</body>
+<script>
+
+  function requestMapAPI(){
+      const place = document.getElementById("place").value;
+      const url = '/requsetPlace';
+      fetch(url,{method : "POST" , body:place})
+          .then( response =>{ return response.json();})
+          .then(res => console.log(res))
+          .catch(error => console.error(error))
+  }
+
+
+
+</script>
+</html>

@@ -1,8 +1,11 @@
 package com.gaerine.triple.googleAPI;
 
+import com.gaerine.triple.ApiKey;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -14,10 +17,12 @@ import java.util.Map;
 @Slf4j
 public class GoogleAPITests {
 
+    @Autowired ApiKey apiKey;
+
     @Test
     public void mpaTest(){
         String url ="https://maps.googleapis.com/maps/api/place/findplacefromtext/json?";
-        String key ="key";
+        String key =apiKey.getApiKey();
 
         WebClient client = WebClient.builder().
                 baseUrl(url)

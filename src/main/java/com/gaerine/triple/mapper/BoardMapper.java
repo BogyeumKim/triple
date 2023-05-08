@@ -25,4 +25,7 @@ public interface BoardMapper {
 
     @Select("select * from dayplace where board_id=#{id}")
     DayPlace selectDayPlaceByBoardId(Long board_id);
+
+    @Select("SELECT * from capital where capital_name LIKE  '%${input}%'")
+    List<Capital> selectCapitalByLikeInput(String input);
 }

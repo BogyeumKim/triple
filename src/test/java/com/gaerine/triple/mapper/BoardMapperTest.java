@@ -48,4 +48,10 @@ class BoardMapperTest {
         Assertions.assertThat(dayPlace).isNotNull();
     }
 
+    @Test
+    public void getCapitalByLike(){
+        List<Capital> result = mapper.selectCapitalByLikeInput("호");
+        log.info("result={}",result);
+    }
+
 }

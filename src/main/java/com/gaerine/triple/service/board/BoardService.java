@@ -17,4 +17,6 @@ public interface BoardService {
 
     DayPlace getDayPlaceByBoardId(Long board_id);
 
+    List<Capital> getCapitalByInput(String input);
+
 }

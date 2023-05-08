@@ -37,4 +37,9 @@ public class BoardServiceImpl implements BoardService{
     public DayPlace getDayPlaceByBoardId(Long board_id) {
         return mapper.selectDayPlaceByBoardId(board_id);
     }
+
+    @Override
+    public List<Capital> getCapitalByInput(String input) {
+        return mapper.selectCapitalByLikeInput(input);
+    }
 }

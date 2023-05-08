@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>떠나는곳</title>
+</head>
+<style>
+  ul{
+    list-style: none;
+  }
+  #category{
+    display: flex;
+  }
+  #category>li{
+    margin-right: 10px;
+    cursor: pointer;
+  }
+
+  #capital>li{
+    margin-bottom: 10px;
+  }
+
+</style>
+
+<body>
+<input type="text" id="searchWorld"><button id="submitWorld">검색</button>
+
+<div>해외도시</div>
+<div style="display: flex">
+  <ul id="category">
+      <li id="0">전체</li>
+      <li th:each="itme :${world}" th:text="${itme.national_name}" th:id="${itme.world_id}"></li>
+  </ul>
+</div>
+
+<div th:each="item :${world}" th:id="world+${item.world_id}">
+    <span th:text="${item.national_name}"/>
+        <ul id="capital" th:each="cap : ${capital}">
+            <li th:text="${cap.capital_name}" th:if="${cap.world_id == item.world_id}"></li>
+        </ul>
+</div>
+</body>
+
+<script>
+    const lis = document.querySelectorAll("#category li")
+    const divs = document.querySelectorAll("[id^='world']");
+
+    lis.forEach(dom => {
+        dom.addEventListener("click",()=>{
+            const id = dom.id;
+            const divById = document.getElementById("world"+id);
+
+            if ( id === "0" ){
+                divs.forEach(div =>{
+                    div.style.display="block";
+                })
+            }else{
+                divs.forEach(div =>{
+                        console.log(div.id,divById.id);
+                    if(div.id !== divById.id){
+                        div.style.display="none";
+                    } else{
+                        div.style.display="block";
+                    }
+                })
+            }
+
+           })
+    })
+
+    const clickIdEvent = (id) => {
+        if(id === 0 ){
+
+        }
+    }
+
+
+    const searchBtn = document.getElementById("submitWorld");
+    searchBtn.addEventListener("click",requestSearchWorld);
+
+    function requestSearchWorld(){
+        const worldVal = document.getElementById("searchWorld").value;
+    }
+
+</script>
+</html>

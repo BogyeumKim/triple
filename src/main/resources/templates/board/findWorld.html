@@ -154,6 +154,7 @@
         dateFormat: "Y-m-d",
         locale:"ko",
         onChange:(obj1,obj2) =>{
+
             if(obj1 && obj2){
                 getDate=obj1;
             }
@@ -228,10 +229,14 @@
                                 for (const x of /*[[${world}]]*/) {
                                     if(x.world_id === result.world_id){
                                         if (!uniqueNames.includes(x.national_name)) {
+                                            if (resultHTML !== '') {
+                                                resultHTML += `</ul>`;
+                                            }
                                             resultHTML += `<span id="${x.world_id}"  name="searchResultWorld">${x.national_name}</span>`;
                                             uniqueNames.push(x.national_name);
+                                            resultHTML += `<ul class="capital">`
                                         }
-                                        resultHTML += `<ul class="capital"><li id="${result.capital_id}" class ="resData" name="searchResulCapital">${result.capital_name}</li></ul>`;
+                                        resultHTML += `<li id="${result.capital_id}" class ="resData" name="searchResulCapital">${result.capital_name}</li>`;
                                     }
                                 }
 
@@ -242,6 +247,7 @@
                                 resContainer.innerText="없는 도시입니다."
                             }
                         }
+                        resultHTML += `</ul>`;
                         resContainer.innerHTML = `<div id="mid2">${resultHTML}</div>`;
                         resContainer.style.display="block";
 
@@ -251,8 +257,8 @@
                                 const id = e.target.getAttribute('id');
                                 const spanId = e.target.parentNode.previousElementSibling.getAttribute('id');
                                 console.log(`검색나라 = id: ${id}, 속한 대륙: ${spanId}`);
-                                worldId=id;
-                                capitalId=spanId;
+                                worldId=spanId;
+                                capitalId=id;
                                 fpClear();
 
                             });
@@ -269,8 +275,8 @@
             const id = e.target.getAttribute('id');
             const spanId = e.target.parentNode.previousElementSibling.getAttribute('id');
             console.log(`기존나라= id: ${id}, 속한 대륙: ${spanId}`);
-            worldId=id;
-            capitalId=spanId;
+            worldId=spanId;
+            capitalId=id;
             fpClear();
         });
     });

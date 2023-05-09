@@ -5,6 +5,7 @@ import com.gaerine.triple.domain.board.World;
 import com.gaerine.triple.service.board.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @Slf4j
@@ -31,9 +33,16 @@ public class BoardController {
     }
 
     @PostMapping("/reqSearchAPI")
-    public ResponseEntity<?> searchWorld(@RequestBody String input){
-        log.info("input={}",input);
-
+    public ResponseEntity<?> searchWorld(@RequestBody Optional<String> capital){
+        if(capital.isEmpty()){
+            return ResponseEntity.badRequest().build();
+        }
+        List<Capital> result = service.getCapitalByInput(capital.get());
+        if(result != null){
+            return ResponseEntity.ok().body(result);
+        }else{
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("없는 도시");
+        }
     }
 
 

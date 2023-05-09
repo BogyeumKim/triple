@@ -20,30 +20,157 @@
     margin-bottom: 10px;
   }
 
+  #header{
+      margin-bottom: 2%;
+  }
+  #resContainer{
+      display: none;
+  }
+
+  .resData{
+      cursor: pointer;
+  }
 </style>
 
 <body>
-<input type="text" id="searchWorld"><button id="submitWorld">검색</button>
+<div id="wrapFull">
 
-<div>해외도시</div>
-<div style="display: flex">
-  <ul id="category">
-      <li id="0">전체</li>
-      <li th:each="itme :${world}" th:text="${itme.national_name}" th:id="${itme.world_id}"></li>
-  </ul>
-</div>
+    <div id="header">
+        <input type="text" id="searchWorld"><button id="submitWorld">검색</button>
+    </div>
 
-<div th:each="item :${world}" th:id="world+${item.world_id}">
-    <span th:text="${item.national_name}"/>
-        <ul id="capital" th:each="cap : ${capital}">
-            <li th:text="${cap.capital_name}" th:if="${cap.world_id == item.world_id}"></li>
-        </ul>
+    <div id="resContainer">
+        <!-- res 데이터 넣기 -->
+    </div>
+
+    <div id="container">
+        <div id="top">
+            <div>해외도시</div>
+            <div style="display: flex">
+              <ul id="category">
+                  <li id="0">전체</li>
+                  <li th:each="itme :${world}" th:text="${itme.national_name}" th:id="${itme.world_id}"></li>
+              </ul>
+            </div>
+        </div>
+
+        <div id="mid">
+            <div th:each="item :${world}" th:id="world+${item.world_id}">
+                <span th:text="${item.national_name}" th:id="${item.world_id}"/>
+                    <ul id="capital">
+                        <li th:each="cap : ${capital}" class ="resData" th:text="${cap.capital_name}" th:id="${cap.capital_id}" th:if="${cap.world_id == item.world_id}"></li>
+                    </ul>
+            </div>
+        </div>
+    </div>
+
 </div>
 </body>
 
-<script>
-    const lis = document.querySelectorAll("#category li")
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    const lis = document.querySelectorAll("#category li");
     const divs = document.querySelectorAll("[id^='world']");
+
+    const searchWorld = document.getElementById("searchWorld");
+    const container = document.getElementById("container");
+    const resContainer = document.getElementById("resContainer");
+
+    let debounce;
+
+    const capital = document.querySelectorAll("#capital li");
+
+    searchWorld.addEventListener("keyup",searchReqAPI);
+
+
+
+
+
+    function searchReqAPI(el){
+
+        if(el.target.value.trim().length <= 0 || el.target.value ==="" || el.target.value ===null ){
+            resContainer.style.display="none";
+            container.style.display="block";
+
+            divs.forEach(div =>{
+                div.style.display="block";
+            })
+
+        }
+
+        clearTimeout(debounce);
+        debounce = setTimeout(()=>{
+            console.log(el.target.value)
+
+            if(el.target.value.trim().length>0){
+                fetch("/reqSearchAPI",{method : "POST" , body:el.target.value})
+                    .then(res => {
+                        if(res.status === 200){
+                            return res.json();
+                        } else{
+                            // 404 Error
+                            resContainer.innerText="없는 도시임"
+                            resContainer.style.display="block";
+                            container.style.display="none";
+
+                        }
+                    })
+                    .then(data => {
+                        let resultHTML = '';
+                        let uniqueNames = [];
+                        container.style.display="none";
+
+                        if(!data.capital_name){
+                            resContainer.innerText="없는 도시임"
+                            resContainer.style.display="block";
+                        }
+
+                        for (const result of data) {
+                            if(result && result.capital_name !== null){
+                                for (const x of /*[[${world}]]*/) {
+                                    if(x.world_id === result.world_id){
+                                        if (!uniqueNames.includes(x.national_name)) {
+                                            resultHTML += `<span id="${x.world_id}"  name="searchResultWorld">${x.national_name}</span>`;
+                                            uniqueNames.push(x.national_name);
+                                        }
+                                        resultHTML += `<ul id="capital"><li id="${result.capital_id}" class ="resData" name="searchResulCapital">${result.capital_name}</li></ul>`;
+                                    }
+                                }
+
+
+                            }
+                            else{
+                                resContainer.style.display="block";
+                                resContainer.innerText="없는 도시입니다."
+                            }
+                        }
+                        resContainer.innerHTML = `<div id="mid2">${resultHTML}</div>`;
+                        resContainer.style.display="block";
+
+                        const searchResultSpansAndLis = document.querySelectorAll('#mid2 li.resData');
+                        searchResultSpansAndLis.forEach(li => {
+                            li.addEventListener('click', (e) => {
+                                const id = e.target.getAttribute('id');
+                                const spanId = e.target.parentNode.previousElementSibling.getAttribute('id');
+                                console.log(`검색나라 = id: ${id}, 속한 대륙: ${spanId}`);
+                            });
+                        });
+
+                    })
+                    .catch(err => console.log(err))
+            }
+        },900);
+    }
+    const searchResultSpansAndLis = document.querySelectorAll('#mid li.resData');
+    searchResultSpansAndLis.forEach(li => {
+        li.addEventListener('click', (e) => {
+            const id = e.target.getAttribute('id');
+            const spanId = e.target.parentNode.previousElementSibling.getAttribute('id');
+            console.log(`기존나라= id: ${id}, 속한 대륙: ${spanId}`);
+        });
+    });
+
 
     lis.forEach(dom => {
         dom.addEventListener("click",()=>{
@@ -56,7 +183,6 @@
                 })
             }else{
                 divs.forEach(div =>{
-                        console.log(div.id,divById.id);
                     if(div.id !== divById.id){
                         div.style.display="none";
                     } else{
@@ -67,20 +193,6 @@
 
            })
     })
-
-    const clickIdEvent = (id) => {
-        if(id === 0 ){
-
-        }
-    }
-
-
-    const searchBtn = document.getElementById("submitWorld");
-    searchBtn.addEventListener("click",requestSearchWorld);
-
-    function requestSearchWorld(){
-        const worldVal = document.getElementById("searchWorld").value;
-    }
-
+    /*]]>*/
 </script>
 </html>

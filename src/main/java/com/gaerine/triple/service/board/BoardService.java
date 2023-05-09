@@ -19,4 +19,6 @@ public interface BoardService {
 
     List<Capital> getCapitalByInput(String input);
 
+    TripBoard saveBoard(TripBoard data);
+
 }

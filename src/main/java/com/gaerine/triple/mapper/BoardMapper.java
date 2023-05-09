@@ -28,4 +28,6 @@ public interface BoardMapper {
 
     @Select("SELECT * from capital where capital_name LIKE  '%${input}%'")
     List<Capital> selectCapitalByLikeInput(String input);
+
+    int insertTripBoard(TripBoard data);
 }

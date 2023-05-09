@@ -49,11 +49,12 @@ public class BoardController {
 
     @PostMapping("/reqChoiceDay")
     public ResponseEntity<TripBoard> moveNextStep(@RequestBody TripBoard data){
-        log.info("data={}",data);
-        if(data.getCapital() == 0 || data.getLocation() == 0 || (data.getStart_date() == null || data.getEnd_date() == null) ){
+        if(data.getCapital() == null || data.getLocation() == null || (data.getStart_date() == null || data.getEnd_date() == null) ){
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok().body(data);
+
+        TripBoard tripBoard = service.saveBoard(data);
+        return tripBoard.getBoard_id() != null ? ResponseEntity.ok().body(tripBoard) : ResponseEntity.badRequest().build();
     }
 
 

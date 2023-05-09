@@ -3,6 +3,9 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
 <mapper namespace="com.gaerine.triple.mapper.BoardMapper">
+    <insert id="insertTripBoard" useGeneratedKeys="true" keyProperty="board_id">
+        insert into tripboard (location,capital,start_date,end_date) values (#{location},#{capital},#{start_date},#{end_date});
+    </insert>
 
 
 </mapper>

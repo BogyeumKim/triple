@@ -51,7 +51,7 @@ public class BoardServiceImpl implements BoardService{
 
     @Override
     public TripBoard saveBoard(TripBoard data) {
-        Date startDate = data.getStart_date();
+/*        Date startDate = data.getStart_date();
         Date endDate = data.getEnd_date();
 
         SimpleDateFormat smft= new SimpleDateFormat("yyyy-MM-dd");
@@ -65,7 +65,7 @@ public class BoardServiceImpl implements BoardService{
             data.setEnd_date(foramtEnd);
         } catch (ParseException e) {
             throw new RuntimeException(e);
-        }
+        }*/
         int result = mapper.insertTripBoard(data);
         if(result == 1){
             return data;

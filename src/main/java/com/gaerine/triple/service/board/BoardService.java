@@ -1,9 +1,6 @@
 package com.gaerine.triple.service.board;
 
-import com.gaerine.triple.domain.board.Capital;
-import com.gaerine.triple.domain.board.DayPlace;
-import com.gaerine.triple.domain.board.TripBoard;
-import com.gaerine.triple.domain.board.World;
+import com.gaerine.triple.domain.board.*;
 
 import java.util.List;
 
@@ -21,4 +18,5 @@ public interface BoardService {
 
     TripBoard saveBoard(TripBoard data);
 
+    TripBoardAndCapital getBoardCapitalById(Long board_id);
 }

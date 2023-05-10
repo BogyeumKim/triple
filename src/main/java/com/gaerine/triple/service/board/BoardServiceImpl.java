@@ -1,9 +1,6 @@
 package com.gaerine.triple.service.board;
 
-import com.gaerine.triple.domain.board.Capital;
-import com.gaerine.triple.domain.board.DayPlace;
-import com.gaerine.triple.domain.board.TripBoard;
-import com.gaerine.triple.domain.board.World;
+import com.gaerine.triple.domain.board.*;
 import com.gaerine.triple.mapper.BoardMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,27 +48,17 @@ public class BoardServiceImpl implements BoardService{
 
     @Override
     public TripBoard saveBoard(TripBoard data) {
-/*        Date startDate = data.getStart_date();
-        Date endDate = data.getEnd_date();
-
-        SimpleDateFormat smft= new SimpleDateFormat("yyyy-MM-dd");
-        String stringStart = smft.format(startDate);
-        String stringEnd = smft.format(endDate);
-
-        try {
-            Date formatStart = smft.parse(stringStart);
-            Date foramtEnd = smft.parse(stringEnd);
-            data.setStart_date(formatStart);
-            data.setEnd_date(foramtEnd);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }*/
         int result = mapper.insertTripBoard(data);
-        if(result == 1){
-            return data;
-        }else{
-            return null;
-        }
+        return result ==1 ? data : null;
+    }
 
+    @Override
+    public TripBoardAndCapital getBoardCapitalById(Long board_id) {
+        TripBoard board = mapper.selectBoardByBoardId(board_id);
+        Capital capital = mapper.selectCapitalById(board.getCapital());
+        TripBoardAndCapital result = new TripBoardAndCapital();
+        result.setTripBoard(board);
+        result.setCapital(capital);
+        return result;
     }
 }

@@ -30,4 +30,7 @@ public interface BoardMapper {
     List<Capital> selectCapitalByLikeInput(String input);
 
     int insertTripBoard(TripBoard data);
+
+    @Select("select * from capital where capital_id=#{id}")
+    Capital selectCapitalById(Long capital_id);
 }

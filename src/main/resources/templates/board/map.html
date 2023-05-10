@@ -1,15 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+
     <title>주소 검색</title>
 </head>
+<style>
+    #map {
+        width: 500px;
+        height: 500px;
+    }
+</style>
 <body>
 
     장소검색 : <input type="text" id="place" ><button onclick="requestMapAPI()">검색</button>
+    <div th:each="item : ${board}" th:text="${item}"></div>
+
+    <div id="map"></div>
 
 </body>
-<script>
+<script th:inline="javascript" async th:src="@{'https://maps.googleapis.com/maps/api/js?key='+${key}+'&callback=initMap&v=weekly'}" defer></script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    let map;
+
+    function initMap() {
+        map = new google.maps.Map(document.getElementById("map"), {
+            center: { lat: /*[[${board.getCapital().lat}]]*/, lng: /*[[${board.getCapital().lng}]]*/ },
+            zoom: 12,
+        });
+    }
+
+    window.initMap = initMap;
 
   function requestMapAPI(){
       const place = document.getElementById("place").value;
@@ -21,6 +45,6 @@
   }
 
 
-
+    /*]]>*/
 </script>
 </html>

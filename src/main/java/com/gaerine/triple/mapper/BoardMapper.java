@@ -20,8 +20,8 @@ public interface BoardMapper {
     @Select("select * from capital")
     List<Capital> selectCapital();
 
-    @Select("select * from tripboard where user_id=#{id}")
-    TripBoard selectBoardByUserId(String user_id);
+    @Select("select * from tripboard where board_id=#{id}")
+    TripBoard selectBoardByBoardId(Long board_id);
 
     @Select("select * from dayplace where board_id=#{id}")
     DayPlace selectDayPlaceByBoardId(Long board_id);

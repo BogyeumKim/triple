@@ -37,7 +37,7 @@ class BoardMapperTest {
 
     @Test
     public  void getBoard(){
-        TripBoard userBoard = mapper.selectBoardByUserId("test1");
+        TripBoard userBoard = mapper.selectBoardByBoardId(new Long(1));
         log.info("userBoard={}",userBoard);
         Assertions.assertThat(userBoard).isNotNull();
     }

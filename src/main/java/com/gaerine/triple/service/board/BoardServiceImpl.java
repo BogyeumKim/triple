@@ -35,8 +35,8 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public TripBoard getBoardByUserId(String user_id) {
-        return mapper.selectBoardByUserId(user_id);
+    public TripBoard getBoardByBoardId(Long board_id) {
+        return mapper.selectBoardByBoardId(board_id);
     }
 
     @Override

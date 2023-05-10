@@ -13,7 +13,7 @@ public interface BoardService {
 
     List<Capital> getCapital();
 
-    TripBoard getBoardByUserId(String user_id);
+    TripBoard getBoardByBoardId(Long board_id);
 
     DayPlace getDayPlaceByBoardId(Long board_id);
 

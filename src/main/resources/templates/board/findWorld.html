@@ -178,8 +178,8 @@
                 }
             })
             .then(data => {
-                // data를 담아 파라미터쿼리와 함께 location href GET 방식
-                // data를 form에 담아 callback fetch POST방식 -> 서버에서 data를 model에 담아 view 이동
+                console.log(data)
+                location.href = `/board/${data.board_id}`;
             })
             .catch(err => console.log(err));
     }
@@ -239,7 +239,6 @@
                                         resultHTML += `<li id="${result.capital_id}" class ="resData" name="searchResulCapital">${result.capital_name}</li>`;
                                     }
                                 }
-
 
                             }
                             else{

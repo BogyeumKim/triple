@@ -13,6 +13,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -54,10 +55,13 @@ public class BoardServiceImpl implements BoardService{
 
     @Override
     public TripBoardAndCapital getBoardCapitalById(Long board_id) {
-        TripBoard board = mapper.selectBoardByBoardId(board_id);
-        Capital capital = mapper.selectCapitalById(board.getCapital());
+        Optional<TripBoard> board = Optional.ofNullable(mapper.selectBoardByBoardId(board_id));
+        if(board.isEmpty()){
+            return null;
+        }
+        Capital capital = mapper.selectCapitalById(board.get().getCapital());
         TripBoardAndCapital result = new TripBoardAndCapital();
-        result.setTripBoard(board);
+        result.setTripBoard(board.get());
         result.setCapital(capital);
         return result;
     }

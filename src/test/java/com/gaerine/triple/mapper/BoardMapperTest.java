@@ -1,9 +1,6 @@
 package com.gaerine.triple.mapper;
 
-import com.gaerine.triple.domain.board.Capital;
-import com.gaerine.triple.domain.board.DayPlace;
-import com.gaerine.triple.domain.board.TripBoard;
-import com.gaerine.triple.domain.board.World;
+import com.gaerine.triple.domain.board.*;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -52,6 +49,13 @@ class BoardMapperTest {
     public void getCapitalByLike(){
         List<Capital> result = mapper.selectCapitalByLikeInput("호");
         log.info("result={}",result);
+    }
+
+    @Test
+    public void getPlaceByCapital(){
+        List<Place> place = mapper.selectPlaceByCapital(new Long(5));
+        log.info("place={}",place);
+        Assertions.assertThat(place).isNotNull();
     }
 
 }

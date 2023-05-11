@@ -1,9 +1,6 @@
 package com.gaerine.triple.mapper;
 
-import com.gaerine.triple.domain.board.Capital;
-import com.gaerine.triple.domain.board.DayPlace;
-import com.gaerine.triple.domain.board.TripBoard;
-import com.gaerine.triple.domain.board.World;
+import com.gaerine.triple.domain.board.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.ResultMap;
 import org.apache.ibatis.annotations.ResultType;
@@ -33,4 +30,7 @@ public interface BoardMapper {
 
     @Select("select * from capital where capital_id=#{id}")
     Capital selectCapitalById(Long capital_id);
+
+    @Select("select * from place where capital_id=#{id}")
+    List<Place> selectPlaceByCapital(Long id);
 }

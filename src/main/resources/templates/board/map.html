@@ -30,6 +30,7 @@
         map = new google.maps.Map(document.getElementById("map"), {
             center: { lat: /*[[${board.getCapital().lat}]]*/, lng: /*[[${board.getCapital().lng}]]*/ },
             zoom: 12,
+            disableDefaultUI : true,
         });
     }
 

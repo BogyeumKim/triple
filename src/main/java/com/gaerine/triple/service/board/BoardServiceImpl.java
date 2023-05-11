@@ -65,4 +65,9 @@ public class BoardServiceImpl implements BoardService{
         result.setCapital(capital);
         return result;
     }
+
+    @Override
+    public List<Place> getPlaceById(Long id) {
+        return mapper.selectPlaceByCapital(id);
+    }
 }

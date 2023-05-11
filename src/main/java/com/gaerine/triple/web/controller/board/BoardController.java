@@ -1,10 +1,7 @@
 package com.gaerine.triple.web.controller.board;
 
 import com.gaerine.triple.ApiKey;
-import com.gaerine.triple.domain.board.Capital;
-import com.gaerine.triple.domain.board.TripBoard;
-import com.gaerine.triple.domain.board.TripBoardAndCapital;
-import com.gaerine.triple.domain.board.World;
+import com.gaerine.triple.domain.board.*;
 import com.gaerine.triple.service.board.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -72,10 +69,12 @@ public class BoardController {
             // 에러 view 만들어서 리턴시키기 , 로그인 검증도 추가하자)
             return null;
         }
+        List<Place> place = service.getPlaceById(board.get().getTripBoard().getCapital());
 
-        model.addAttribute("board",board.get());
-        model.addAttribute("key",apiKey.getApiKey());
-        model.addAttribute("period",board.get().getTripBoard().getPeriod());
+        model.addAttribute("board",board.get())
+                .addAttribute("key",apiKey.getApiKey())
+                .addAttribute("period",board.get().getTripBoard().getPeriod())
+                .addAttribute("place",place);
 
         return "board/map";
     }

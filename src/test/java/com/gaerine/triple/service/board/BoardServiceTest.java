@@ -1,6 +1,7 @@
 package com.gaerine.triple.service.board;
 
 import com.gaerine.triple.domain.board.Capital;
+import com.gaerine.triple.domain.board.TripBoard;
 import com.gaerine.triple.domain.board.World;
 import com.gaerine.triple.mapper.BoardMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -15,21 +16,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-//@SpringBootTest
+@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 @Slf4j
 class BoardServiceTest {
 
-    @Mock
+//    @Mock
     private BoardMapper mapper;
 
-    @InjectMocks
-    private BoardServiceImpl service;
+//    @InjectMocks
+    @Autowired private BoardServiceImpl service;
 
     @Test
     void getWorld() {
@@ -53,10 +57,13 @@ class BoardServiceTest {
     }
 
     @Test
-    void getBoardByUserId() {
+    void getDays() {
+        TripBoard test = service.getBoardByBoardId(new Long(11));
+        LocalDate start_date = test.getStart_date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate end_date = test.getEnd_date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        long days = ChronoUnit.DAYS.between(start_date, end_date);
+        log.info("test={}",days);
     }
 
-    @Test
-    void getDayPlaceByBoardId() {
-    }
 }

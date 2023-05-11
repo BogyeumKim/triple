@@ -75,6 +75,7 @@ public class BoardController {
 
         model.addAttribute("board",board.get());
         model.addAttribute("key",apiKey.getApiKey());
+        model.addAttribute("period",board.get().getTripBoard().getPeriod());
 
         return "board/map";
     }

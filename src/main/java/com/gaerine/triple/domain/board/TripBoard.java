@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 @Getter
@@ -17,4 +20,10 @@ public class TripBoard {
     private Date start_date;
     private Date end_date;
 
+    public Long getPeriod(){
+        LocalDate start = this.start_date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate end = this.end_date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        long days = ChronoUnit.DAYS.between(start, end);
+        return days;
+    }
 }

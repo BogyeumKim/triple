@@ -7,5 +7,8 @@
         insert into tripboard (location,capital,start_date,end_date) values (#{location},#{capital},#{start_date},#{end_date});
     </insert>
 
+    <insert id="insertDayPlace" useGeneratedKeys="true" keyProperty="day_id">
+        insert into dayplace (board_id) values  (#{board_id});
+    </insert>
 
 </mapper>

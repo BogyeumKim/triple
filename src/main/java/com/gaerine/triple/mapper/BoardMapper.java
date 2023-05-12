@@ -1,10 +1,7 @@
 package com.gaerine.triple.mapper;
 
 import com.gaerine.triple.domain.board.*;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.ResultMap;
-import org.apache.ibatis.annotations.ResultType;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -27,6 +24,8 @@ public interface BoardMapper {
     List<Capital> selectCapitalByLikeInput(String input);
 
     int insertTripBoard(TripBoard data);
+
+    int insertDayPlace(Long board_id);
 
     @Select("select * from capital where capital_id=#{id}")
     Capital selectCapitalById(Long capital_id);

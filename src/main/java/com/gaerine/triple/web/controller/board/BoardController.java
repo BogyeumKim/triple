@@ -3,7 +3,6 @@ package com.gaerine.triple.web.controller.board;
 import com.gaerine.triple.ApiKey;
 import com.gaerine.triple.domain.board.*;
 import com.gaerine.triple.service.board.BoardService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,9 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -58,6 +57,9 @@ public class BoardController {
         }
 
         TripBoard tripBoard = service.saveBoard(data);
+        if(tripBoard.getBoard_id() != null ){
+            service.saveDayPlace(tripBoard.getBoard_id());
+        }
         return tripBoard.getBoard_id() != null ? ResponseEntity.ok().body(tripBoard) : ResponseEntity.badRequest().build();
     }
 

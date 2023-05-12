@@ -54,6 +54,11 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
+    public int saveDayPlace(Long board_id) {
+        return mapper.insertDayPlace(board_id);
+    }
+
+    @Override
     public TripBoardAndCapital getBoardCapitalById(Long board_id) {
         Optional<TripBoard> board = Optional.ofNullable(mapper.selectBoardByBoardId(board_id));
         if(board.isEmpty()){

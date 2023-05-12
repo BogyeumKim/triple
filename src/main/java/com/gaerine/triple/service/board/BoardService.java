@@ -18,6 +18,8 @@ public interface BoardService {
 
     TripBoard saveBoard(TripBoard data);
 
+    int saveDayPlace(Long board_id);
+
     TripBoardAndCapital getBoardCapitalById(Long board_id);
 
     List<Place> getPlaceById(Long id);

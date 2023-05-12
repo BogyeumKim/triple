@@ -32,4 +32,7 @@ public interface BoardMapper {
 
     @Select("select * from place where capital_id=#{id}")
     List<Place> selectPlaceByCapital(Long id);
+
+    @Update("update dayplace set day1 = #{json} where board_id=#{id};")
+    int updateDayPlace(@Param("json") String place, @Param("id") Long board_id);
 }

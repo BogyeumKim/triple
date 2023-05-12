@@ -1,5 +1,7 @@
 package com.gaerine.triple.service.board;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaerine.triple.domain.board.*;
 import com.gaerine.triple.mapper.BoardMapper;
 import lombok.RequiredArgsConstructor;
@@ -75,4 +77,24 @@ public class BoardServiceImpl implements BoardService{
     public List<Place> getPlaceById(Long id) {
         return mapper.selectPlaceByCapital(id);
     }
+
+    @Override
+    public int modifyDayPlace(List<SelectPlace> place,Long board_id) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        int result = 0;
+        try {
+            String list = objectMapper.writeValueAsString(place);
+            result = mapper.updateDayPlace(list, board_id);
+
+            if(result !=0) {
+                return 1;
+            }
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        return 0;
+    }
+
 }

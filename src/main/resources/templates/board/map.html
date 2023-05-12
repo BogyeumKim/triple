@@ -11,21 +11,152 @@
         width: 500px;
         height: 500px;
     }
+    #listWrap{
+        /*display: none;*/
+    }
+    #noResult{
+        display: none;
+    }
+    .place{
+        cursor: pointer;
+    }
+    .choicePlaces{
+        border: 1px solid black;
+    }
+    #mid{
+        /*display: none;*/
+    }
+    #reqBtn{
+        display: none;
+    }
 </style>
 <body>
+<div id="wrap">
 
-    장소검색 : <input type="text" id="place" ><button onclick="requestMapAPI()">검색</button>
-    <div th:each="item : ${board}" th:text="${item}"></div>
+    <div id="listWrap">
+        <div class="searchBox">
+            <label>장소 :<input type="text" id="search" onkeyup="filter()" placeholder="장소를 검색하세요."></label>
+        </div>
 
-    <div id="map"></div>
+        <div class="listBox">
+
+            <div th:each="item : ${place}" class="listInner">
+                <span class="place" th:id="${item.id}" th:text="${item.korea_name}"/>
+            </div>
+
+            <div id="noResult">
+                <span>검색 결과가 없습니다.</span>
+                <button>나만의 장소 추가하기</button>
+            </div>
+
+            <div id="selectedPlace">
+                <p>선택된 장소</p>
+                <div class="choicePlaces"></div>
+                <button id="reqBtn">선택완료</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="mid">
+        장소검색 : <input type="text" id="placeSearch" ><button onclick="requestMapAPI()">검색</button>
+        <div th:each="item : ${board}" th:text="${item}"></div>
+
+        <div id="map"></div>
+
+        <th:block th:each="day : ${#numbers.sequence(1,period)}">
+            <div th:text="${day}+'days'"></div>
+            <button type="button" class="addPlace" th:id="${day}">장소 추가</button>
+        </th:block>
+    </div>
+</div>
+
 
 </body>
-<script th:inline="javascript" async th:src="@{'https://maps.googleapis.com/maps/api/js?key='+${key}+'&callback=initMap&v=weekly'}" defer></script>
+<!--<script th:inline="javascript" async th:src="@{'https://maps.googleapis.com/maps/api/js?key='+${key}+'&callback=initMap&v=weekly'}" defer></script>-->
 
 <script th:inline="javascript">
     /*<![CDATA[*/
-    let map;
 
+    const reqBtn = document.getElementById('reqBtn');
+    reqBtn.addEventListener('click',submitPlace);
+
+    function submitPlace(){
+        const url = `/reqPlace/[[${board.getTripBoard().getBoard_id()}]]`;
+        fetch(url,{method : "POST" , headers:{'Content-Type': 'application/json'},body:JSON.stringify(selectPlace)})
+            .then( res =>{
+                if(res.status === 200){
+                    location.reload();
+                }else{
+                    alert("다시 선택해주세요.")
+                }
+            })
+            .catch(error => console.error(error))
+    }
+
+    // 검색어
+    function filter(){
+        const search = document.getElementById("search").value.toLowerCase().replace(/\s/g, "");
+        const listInner = document.getElementsByClassName("listInner");
+        const noResult = document.getElementById("noResult");
+
+        let isResultFound = false;
+
+        for (let i = 0; i < listInner.length; i++) {
+            place = listInner[i].getElementsByClassName("place");
+
+            if (place[0].innerHTML.toLowerCase().replace(/\s/g, "").indexOf(search) != -1) {
+                listInner[i].style.display = "flex"
+                isResultFound = true;
+            } else  {
+                listInner[i].style.display = "none"
+            }
+        }
+
+        if (!isResultFound) {
+            noResult.style.display = "flex";
+        } else {
+            noResult.style.display = "none";
+        }
+    }
+
+
+    // 장소 리스트 클릭
+    listPlace();
+    let selectPlace = [];
+
+    function listPlace(){
+        const place = document.querySelectorAll('.place');
+        const choicePlaces = document.querySelector('.choicePlaces');
+        place.forEach(dom => {
+            dom.addEventListener('click',(e) =>{
+                const placeName= e.target.innerText;
+                const placeId = e.target.getAttribute('id');
+
+                if(selectPlace.some(place => place.placeId === placeId)){
+                    console.log("이미 선택됨")
+                    return;
+                }
+
+                const placeList = {placeId:placeId,placeName:placeName};
+                selectPlace.push(placeList);
+
+                let addPlaceList = document.createElement("span");
+                console.log(placeList)
+                addPlaceList.innerHTML=`<div>${placeName}</div>`;
+                choicePlaces.appendChild(addPlaceList);
+
+                if(selectPlace.length >0){
+                    reqBtn.style.display = 'block';
+                }
+
+            })
+        })
+    }
+
+
+
+    // 구글 맵 API
+    let map;
     function initMap() {
         map = new google.maps.Map(document.getElementById("map"), {
             center: { lat: /*[[${board.getCapital().lat}]]*/, lng: /*[[${board.getCapital().lng}]]*/ },
@@ -33,11 +164,11 @@
             disableDefaultUI : true,
         });
     }
-
     window.initMap = initMap;
 
+    // 구글 장소 검색 API
   function requestMapAPI(){
-      const place = document.getElementById("place").value;
+      const place = document.getElementById("placeSearch").value;
       const url = '/requsetPlace';
       fetch(url,{method : "POST" , body:place})
           .then( response =>{ return response.json();})

@@ -81,4 +81,13 @@ public class BoardController {
         return "board/map";
     }
 
+    @PostMapping("/reqPlace/{boardId}")
+    public ResponseEntity<String> savePlace(@RequestBody List<SelectPlace> data,@PathVariable Long boardId){
+        if(data.isEmpty()){
+            return ResponseEntity.badRequest().build();
+        }
+        int modify = service.modifyDayPlace(data, boardId);
+        return modify == 1 ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
+    }
+
 }

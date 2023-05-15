@@ -1,6 +1,7 @@
 package com.gaerine.triple.service.board;
 
 import com.gaerine.triple.domain.board.Capital;
+import com.gaerine.triple.domain.board.SelectPlace;
 import com.gaerine.triple.domain.board.TripBoard;
 import com.gaerine.triple.domain.board.World;
 import com.gaerine.triple.mapper.BoardMapper;
@@ -19,8 +20,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -64,6 +68,23 @@ class BoardServiceTest {
 
         long days = ChronoUnit.DAYS.between(start_date, end_date);
         log.info("test={}",days);
+    }
+
+    @Test
+    void getPlaces(){
+        List<SelectPlace> places = new ArrayList<>();
+        places.add(new SelectPlace(){{
+            setPlaceId(1L);
+            setPlaceName("살라 다낭 비치 호텔");
+        }});
+        places.add(new SelectPlace() {{
+            setPlaceId(6L);
+            setPlaceName("살라우키키");
+        }});
+
+        List<Long> list = places.stream().map(id -> id.getPlaceId()).collect(Collectors.toList());
+
+        log.info("places={}",list);
     }
 
 }

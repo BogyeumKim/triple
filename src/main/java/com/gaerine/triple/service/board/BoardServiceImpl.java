@@ -16,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -97,4 +98,10 @@ public class BoardServiceImpl implements BoardService{
         return 0;
     }
 
+    @Override
+    public List<Place> findPlaceByIds(List<SelectPlace> place) {
+        List<Long> list = place.stream().map(id -> id.getPlaceId()).collect(Collectors.toList());
+        List<Place> result = mapper.selectPlaceByIds(list);
+        return result;
+    }
 }

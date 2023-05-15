@@ -72,11 +72,12 @@ public class BoardController {
             return null;
         }
         List<Place> place = service.getPlaceById(board.get().getTripBoard().getCapital());
+        DayPlace plan = service.getDayPlaceByBoardId(boardId);
 
         model.addAttribute("board",board.get())
                 .addAttribute("key",apiKey.getApiKey())
-                .addAttribute("period",board.get().getTripBoard().getPeriod())
-                .addAttribute("place",place);
+                .addAttribute("place",place)
+                .addAttribute("plan",plan);
 
         return "board/map";
     }

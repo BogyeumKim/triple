@@ -63,10 +63,15 @@
 
         <div id="map"></div>
 
-        <th:block th:each="day : ${#numbers.sequence(1,period)}">
+
+
+        <th:block th:each="day : ${#numbers.sequence(1,board.getTripBoard().getPeriod())}">
             <div th:text="${day}+'days'"></div>
+            <span th:if="${plan['getDay'+day]}" th:text="${plan['getDay'+day]}"></span>
             <button type="button" class="addPlace" th:id="${day}">장소 추가</button>
         </th:block>
+
+
     </div>
 </div>
 
@@ -178,10 +183,6 @@
             map: map,
         });
     }
-
-
-
-
 
     window.initMap = initMap;
 

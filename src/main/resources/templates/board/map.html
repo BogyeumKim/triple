@@ -72,7 +72,7 @@
 
 
 </body>
-<!--<script th:inline="javascript" async th:src="@{'https://maps.googleapis.com/maps/api/js?key='+${key}+'&callback=initMap&v=weekly'}" defer></script>-->
+<script th:inline="javascript" async th:src="@{'https://maps.googleapis.com/maps/api/js?key='+${key}+'&callback=initMap&v=weekly'}" defer></script>
 
 <script th:inline="javascript">
     /*<![CDATA[*/
@@ -85,10 +85,16 @@
         fetch(url,{method : "POST" , headers:{'Content-Type': 'application/json'},body:JSON.stringify(selectPlace)})
             .then( res =>{
                 if(res.status === 200){
-                    location.reload();
+                    console.log(res);
+                    return res.json();
                 }else{
                     alert("다시 선택해주세요.")
                 }
+            })
+            .then(data => {
+                data.forEach(item => {
+                    addMarker(item.lat,item.lng)
+                })
             })
             .catch(error => console.error(error))
     }
@@ -154,7 +160,6 @@
     }
 
 
-
     // 구글 맵 API
     let map;
     function initMap() {
@@ -163,7 +168,21 @@
             zoom: 12,
             disableDefaultUI : true,
         });
+
     }
+
+    // 구글 마커추가 API
+    function addMarker(lat, lng) {
+        const marker = new google.maps.Marker({
+            position: {lat, lng},
+            map: map,
+        });
+    }
+
+
+
+
+
     window.initMap = initMap;
 
     // 구글 장소 검색 API

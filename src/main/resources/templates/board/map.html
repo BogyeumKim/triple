@@ -82,6 +82,32 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
 
+    const placeInfo=/*[[${place}]]*/;
+    var plan  = /*[[${plan}]]*/;
+
+    function initMarker(planArr){
+        const plan = JSON.parse(planArr);
+
+        var placeIds = plan.map((item)=> {
+            return item.placeId;
+        });
+
+        const filter1 = placeInfo.filter((info)=>{
+            return placeIds.includes(info.id)
+        });
+
+        const marker = filter1.map((item)=>{
+            return  new google.maps.Marker({
+                position: { lat : item.lat, lng : item.lng},
+                map: map,
+            });
+        });
+        return marker;
+    }
+
+
+
+
     const reqBtn = document.getElementById('reqBtn');
     reqBtn.addEventListener('click',submitPlace);
 
@@ -172,6 +198,15 @@
             center: { lat: /*[[${board.getCapital().lat}]]*/, lng: /*[[${board.getCapital().lng}]]*/ },
             zoom: 12,
             disableDefaultUI : true,
+        });
+
+        const days = Object.keys(plan).filter((key)=>key.startsWith('day') && key !== 'day_id');
+
+        days.forEach((item) => {
+            const dayData = plan[item];
+            if (dayData !== null && dayData !== undefined) {
+                initMarker(dayData);
+            }
         });
 
     }

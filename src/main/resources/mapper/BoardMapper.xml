@@ -23,6 +23,12 @@
                 </foreach>
             </otherwise>
         </choose>
+
+        ORDER BY FIELD(id,
+        <foreach collection="ids" item="item" separator=",">
+            #{item}
+        </foreach>
+        )
     </select>
 
 </mapper>

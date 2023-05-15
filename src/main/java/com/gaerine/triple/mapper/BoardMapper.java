@@ -35,4 +35,6 @@ public interface BoardMapper {
 
     @Update("update dayplace set day1 = #{json} where board_id=#{id};")
     int updateDayPlace(@Param("json") String place, @Param("id") Long board_id);
+
+    List<Place> selectPlaceByIds(@Param("ids") List<Long> ids);
 }

@@ -10,5 +10,19 @@
     <insert id="insertDayPlace" useGeneratedKeys="true" keyProperty="day_id">
         insert into dayplace (board_id) values  (#{board_id});
     </insert>
+    
+    <select id="selectPlaceByIds" resultType="com.gaerine.triple.domain.board.Place">
+        select * from place where
+        <choose>
+            <when test="ids.size() == 1">
+                id = #{ids[0]}
+            </when>
+            <otherwise>
+                <foreach collection="ids" item="item" separator="or">
+                    id=#{item}
+                </foreach>
+            </otherwise>
+        </choose>
+    </select>
 
 </mapper>

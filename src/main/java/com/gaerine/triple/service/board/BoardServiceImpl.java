@@ -1,6 +1,7 @@
 package com.gaerine.triple.service.board;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaerine.triple.domain.board.*;
 import com.gaerine.triple.mapper.BoardMapper;
@@ -8,11 +9,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -84,14 +88,31 @@ public class BoardServiceImpl implements BoardService{
         ObjectMapper objectMapper = new ObjectMapper();
         int result = 0;
         try {
-            String list = objectMapper.writeValueAsString(place);
+            // 기존 dayplace 조회
+            DayPlace dayPlace = mapper.selectDayPlaceByBoardId(board_id);
+
+            // 메소드 동적 호출
+            String getMethodDay = "getDay" + dayid;
+            Method method = dayPlace.getClass().getMethod(getMethodDay);
+            String getMethod = (String) method.invoke(dayPlace);
+
+            // 동적 호출한 메소드 SelectPlace List로 타입 저장
+            List<SelectPlace> oldPlace = objectMapper.readValue(getMethod, new TypeReference<List<SelectPlace>>() {});
+
+            // 기존 dayPlace와 새로 선택한 place 합침 when
+            List<SelectPlace> addPlace = new ArrayList<>();
+            addPlace.addAll(oldPlace);
+            addPlace.addAll(place);
+
+            String list = objectMapper.writeValueAsString(addPlace);
+
             result = mapper.updateDayPlace(list, board_id,dayid);
 
             if(result !=0) {
                 return 1;
             }
 
-        } catch (JsonProcessingException e) {
+        } catch (JsonProcessingException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
 

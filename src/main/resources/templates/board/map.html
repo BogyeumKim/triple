@@ -12,7 +12,7 @@
         height: 500px;
     }
     #listWrap{
-        /*display: none;*/
+        display: none;
     }
     #noResult{
         display: none;
@@ -22,9 +22,6 @@
     }
     .choicePlaces{
         border: 1px solid black;
-    }
-    #mid{
-        /*display: none;*/
     }
     #reqBtn{
         display: none;
@@ -77,10 +74,20 @@
 
 
 </body>
-<script th:inline="javascript" async th:src="@{'https://maps.googleapis.com/maps/api/js?key='+${key}+'&callback=initMap&v=weekly'}" defer></script>
+<!--<script th:inline="javascript" async th:src="@{'https://maps.googleapis.com/maps/api/js?key='+${key}+'&callback=initMap&v=weekly'}" defer></script>-->
 
 <script th:inline="javascript">
     /*<![CDATA[*/
+
+    const addPlaceBtn = document.querySelectorAll('.addPlace');
+    addPlaceBtn.forEach(item =>{
+        item.addEventListener('click',()=>{
+            const listWrap = document.getElementById('listWrap');
+            listWrap.style.display = 'block';
+            reqBtn.id = item.id;
+        });
+    });
+
 
     const placeInfo=/*[[${place}]]*/;
     var plan  = /*[[${plan}]]*/;
@@ -112,7 +119,10 @@
     reqBtn.addEventListener('click',submitPlace);
 
     function submitPlace(){
-        const url = `/reqPlace/[[${board.getTripBoard().getBoard_id()}]]`;
+        const boardId = /*[[${board.getTripBoard().getBoard_id()}]]*/;
+        const dayId = reqBtn.id;
+        const url = `/reqPlace/${boardId}?dayId=${dayId}`;
+        console.log(url)
         fetch(url,{method : "POST" , headers:{'Content-Type': 'application/json'},body:JSON.stringify(selectPlace)})
             .then( res =>{
                 if(res.status === 200){

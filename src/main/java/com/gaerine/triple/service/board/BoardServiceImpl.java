@@ -80,12 +80,12 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public int modifyDayPlace(List<SelectPlace> place,Long board_id) {
+    public int modifyDayPlace(List<SelectPlace> place,Long board_id, Long dayid) {
         ObjectMapper objectMapper = new ObjectMapper();
         int result = 0;
         try {
             String list = objectMapper.writeValueAsString(place);
-            result = mapper.updateDayPlace(list, board_id);
+            result = mapper.updateDayPlace(list, board_id,dayid);
 
             if(result !=0) {
                 return 1;

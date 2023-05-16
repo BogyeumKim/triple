@@ -83,11 +83,11 @@ public class BoardController {
     }
 
     @PostMapping("/reqPlace/{boardId}")
-    public ResponseEntity<List<Place>> savePlace(@RequestBody List<SelectPlace> data,@PathVariable Long boardId){
+    public ResponseEntity<List<Place>> savePlace(@RequestParam("dayId") Long dayId,@RequestBody List<SelectPlace> data,@PathVariable("boardId") Long boardId){
         if(data.isEmpty()){
             return ResponseEntity.badRequest().build();
         }
-        int modify = service.modifyDayPlace(data, boardId);
+        int modify = service.modifyDayPlace(data, boardId,dayId);
         List<Place> places = service.findPlaceByIds(data);
         return modify == 1 ? ResponseEntity.ok().body(places) : ResponseEntity.badRequest().build();
     }

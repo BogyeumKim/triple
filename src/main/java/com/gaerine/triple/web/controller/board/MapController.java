@@ -16,25 +16,35 @@ public class MapController {
 
     private final ApiKey apiKey;
 
-    @PostMapping("/requsetPlace")
-    public ResponseEntity<Map<String,Object>> requestAPI(@RequestBody String req){
+    @PostMapping("/requestPlace")
+    public ResponseEntity<Map<String,Object>> requestAPI(@RequestBody Map<String,String> req){
 
-        String url ="https://maps.googleapis.com/maps/api/place/findplacefromtext/json?";
+        /* 단일장소 조회 */
+//        String url ="https://maps.googleapis.com/maps/api/place/findplacefromtext/json?";
+
+        /* 여러장소 조회*/
+        String url ="https://maps.googleapis.com/maps/api/place/textsearch/json?";
         String key =apiKey.getApiKey();
+
+        /* 다낭 좌표 단일장소 */
+//        String location = "circle:2000@"+req.get("lat") + "," + req.get("lng");
+//        queryParam("locationbias",location)
+//        .queryParam("inputtype", "textquery")
+//          query -> input 쿼리 name 변경
 
         WebClient client = WebClient.builder().
                 baseUrl(url)
                 .build();
 
         Map<String,Object> result = client.get().uri(data -> data
-                .queryParam("input", req)
-                .queryParam("inputtype", "textquery")
+                .queryParam("query", req.get("place"))
+                .queryParam("location",req.get("lat")+","+req.get("lng"))
+                .queryParam("radius",2000)
                 .queryParam("fields", "formatted_address,name,rating,opening_hours,geometry")
                 .queryParam("key", key).build()
         ).retrieve().bodyToMono(Map.class).block();
 
         log.info("result={}",result);
-
         return ResponseEntity.ok().body(result);
     }
 }

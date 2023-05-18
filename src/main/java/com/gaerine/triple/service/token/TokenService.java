@@ -9,7 +9,7 @@ public interface TokenService {
 
     Token getToken(String token);
 
-    int modifyToken(String newToken,String oldToken);
+    int modifyToken(String newToken, String refreshToken);
 
     int modifyCreatedDate(Date date,String token);
 

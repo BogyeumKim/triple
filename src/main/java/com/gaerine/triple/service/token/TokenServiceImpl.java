@@ -30,8 +30,8 @@ public class TokenServiceImpl implements TokenService{
     }
 
     @Override
-    public int modifyToken(String newToken, String oldToken) {
-        return mapper.updateToken(newToken, oldToken);
+    public int modifyToken(String newToken, String refreshToken) {
+        return mapper.updateToken(newToken, refreshToken);
     }
 
     @Override
@@ -57,7 +57,10 @@ public class TokenServiceImpl implements TokenService{
         if(result == true) {
             log.info("expires Token....");
             String newToken = UUID.randomUUID().toString();
-            int modifyResult = modifyToken(newToken, token);/* update access_Token , update_date*/
+
+            // refresh token select
+            String refreshToken = getToken.getRefresh_token();
+            int modifyResult = modifyToken(newToken, refreshToken);/* update access_Token , refresh token*/
                 if(modifyResult == 1 ){
                     getToken.setAccess_token(newToken);
                 }

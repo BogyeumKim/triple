@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Optional;
 
@@ -35,7 +37,7 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Member> login(@RequestBody LoginVO login) {
+    public ResponseEntity<Member> login(@RequestBody LoginVO login, HttpServletResponse response) {
         log.info("login={}", login);
         Optional<Member> loginMember = memberService.login(login);
 
@@ -49,8 +51,18 @@ public class LoginController {
             }else{
                 token = tokenService.getToken(tokenById.getAccess_token()); // 기존에 token이 있고 만료시간 지나도 알아서 갱신
             }
+
             headers = new HttpHeaders();
-            headers.setBearerAuth(token.getAccess_token());
+
+            if(token != null){
+                headers.setBearerAuth(token.getAccess_token());
+                Cookie cookie = new Cookie("refreshToken",token.getRefresh_token());
+                cookie.setMaxAge(30 * 24 * 60 * 60); // 리프레쉬 토큰 유효기간 30일
+                cookie.setHttpOnly(true);
+                cookie.setPath("/");
+
+                response.addCookie(cookie);
+            }
         }
 
         return loginMember.isPresent() ? new ResponseEntity<>(headers, HttpStatus.OK) : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

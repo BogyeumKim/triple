@@ -16,8 +16,8 @@ public interface TokenMapper {
     @Select("select * from token where access_token=#{token}")
     Token selectToken(String token);
 
-    @Update("update token set access_token =#{newToken}, update_date=now() where access_token=#{oldToken}")
-    int updateToken(@Param("newToken") String newToken,@Param("oldToken") String oldToken);
+    @Update("update token set access_token =#{newToken}, update_date=now() where refresh_token=#{refreshToken}")
+    int updateToken(@Param("newToken") String newToken,@Param("refreshToken") String refreshToken);
 
     @Update("update token set created_date=#{newDate} where access_token=#{token}")
     int updateCreatedDate(@Param("newDate") Date date,@Param("token") String token);

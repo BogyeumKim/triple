@@ -2,6 +2,8 @@ package com.gaerine.triple.service.token;
 
 import com.gaerine.triple.domain.token.Expires;
 import com.gaerine.triple.domain.token.Token;
+import com.gaerine.triple.exception.TokenExpiredException;
+import com.gaerine.triple.exception.TokenNotFoundException;
 import com.gaerine.triple.mapper.TokenMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,6 +66,33 @@ public class TokenServiceImpl implements TokenService{
                 if(modifyResult == 1 ){
                     getToken.setAccess_token(newToken);
                 }
+        }
+
+        return getToken;
+    }
+
+    @Override
+    public Token validationToken(String token) {
+        Token getToken = mapper.selectToken(token);
+        if(getToken == null){
+            throw new TokenNotFoundException();
+        }
+
+        Date getTokenDate = null;
+        if(getToken.getUpdate_date() == null ){
+            getTokenDate = getToken.getCreated_date();
+        } else {
+            getTokenDate = getToken.getUpdate_date();
+        }
+
+        // Date to LocalDateTime and plus expires
+        LocalDateTime expriesDate = LocalDateTime.ofInstant(getTokenDate.toInstant(), ZoneId.systemDefault()).plusSeconds(Expires.EXPIRES_IN);
+        log.info("expriesDate={}",expriesDate);
+        boolean result = LocalDateTime.now().isAfter(expriesDate);
+
+        // if Token expires
+        if(result == true) {
+            throw new TokenExpiredException();
         }
 
         return getToken;

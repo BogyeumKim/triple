@@ -14,4 +14,6 @@ public interface TokenService {
     int modifyCreatedDate(Date date,String token);
 
     Token getTokenById(Long id);
+
+    Token validationToken(String token);
 }

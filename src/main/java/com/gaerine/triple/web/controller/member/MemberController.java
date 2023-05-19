@@ -43,17 +43,15 @@ public class MemberController {
         Optional<String> headerToken = Optional.ofNullable(header.replaceAll("Bearer ", ""));
 
         if(headerToken.isPresent()){
-            // given
-            Optional<Token> getToken = Optional.ofNullable(tokenService.getLoginToken(headerToken.get()));
+            // given [ service 에서 검증처리 ]
+            Token getToken = tokenService.validationToken(headerToken.get());
             //when
-            if(getToken.isPresent()){
-                Member readMember = memberService.readMember(getToken.get().getMember_id());
-                // then
-                return ResponseEntity.status(HttpStatus.OK).body(readMember);
-            }
+            Member readMember = memberService.readMember(getToken.getMember_id());
+            // then
+            return ResponseEntity.status(HttpStatus.OK).body(readMember);
         }
 
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     // 멤버 가입

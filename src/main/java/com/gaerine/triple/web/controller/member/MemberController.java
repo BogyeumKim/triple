@@ -8,6 +8,7 @@ import com.gaerine.triple.web.SessionConst;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -33,7 +34,22 @@ public class MemberController {
         this.tokenService = tokenService;
     }
 
+    @PostMapping("/newToken")
+    public ResponseEntity<String> renewToken(@CookieValue(name = "refreshToken",required = false) Optional<String> refreshToken){
+        log.info("Cookie token={}",refreshToken);
 
+        if(refreshToken.isPresent()){
+            String newAccToken = UUID.randomUUID().toString();
+            int result = tokenService.modifyToken(newAccToken, refreshToken.get());
+
+            if(result == 1){
+                HttpHeaders authHeader = new HttpHeaders();
+                authHeader.setBearerAuth(newAccToken);
+                return ResponseEntity.ok().headers(authHeader).build();
+            }
+        }
+        return ResponseEntity.badRequest().build();
+    }
 
 
     // 멤버 조회

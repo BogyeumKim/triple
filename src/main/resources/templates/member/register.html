@@ -3,6 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>회원가입</title>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
 </head>
 <body>
 
@@ -48,6 +49,39 @@
               }
           }).catch(error => console.error(error))
   }
+
+
+  async function memberInfoFetch() {
+      const accessToken = localStorage.getItem("Authorization");
+      await fetch('/member/info',{
+          method: "GET", headers: {
+              Authorization : `Bearer ${accessToken}`
+          }
+      })
+          .then(res => {
+              if(res.status === 401){
+                  // refreshToken을 이용해 갱신
+                  refreshToken();
+              }
+          });
+  }
+
+
+  function refreshToken(){
+      fetch('/member/newToken',{method:"POST",credentials:"include"})
+          .then(res=>{
+              if(res.status === 200){
+                  let token = res.headers.get("Authorization");
+                  localStorage.setItem("Authorization",token);
+                  alert("토큰 변경완료");
+                  console.log(token);
+              } else {
+                  throw new Error("토큰 변경실패");
+              }
+          }).catch(err => console.log(err));
+  }
+
+
 
 
   function registerFetch(){

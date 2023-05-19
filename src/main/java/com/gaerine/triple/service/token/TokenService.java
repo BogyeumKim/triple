@@ -7,7 +7,7 @@ import java.util.Date;
 public interface TokenService {
     Token saveToken(Long memberId);
 
-    Token getToken(String token);
+    Token getLoginToken(String token);
 
     int modifyToken(String newToken, String refreshToken);
 

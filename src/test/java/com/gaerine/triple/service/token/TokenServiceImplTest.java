@@ -39,7 +39,7 @@ class TokenServiceImplTest {
         // given
         Token saveToken = service.saveToken(new Long(1));
         // when
-        Token token = service.getToken(saveToken.getAccess_token());
+        Token token = service.getLoginToken(saveToken.getAccess_token());
         // then
         Assertions.assertThat(saveToken).usingRecursiveComparison().ignoringFieldsOfTypes(Date.class, Date.class).isEqualTo(token);
     }
@@ -58,7 +58,7 @@ class TokenServiceImplTest {
         service.modifyCreatedDate(resultDate, saveToken.getAccess_token());
 
         // when
-        Token token = service.getToken(saveToken.getAccess_token());
+        Token token = service.getLoginToken(saveToken.getAccess_token());
 
         // then
         Assertions.assertThat(saveToken.getAccess_token()).isNotEqualTo(token.getAccess_token());

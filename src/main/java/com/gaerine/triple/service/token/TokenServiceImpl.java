@@ -35,7 +35,7 @@ public class TokenServiceImpl implements TokenService{
     }
 
     @Override
-    public Token getToken(String token) {
+    public Token getLoginToken(String token) {
         Token getToken = mapper.selectToken(token);
         if(getToken == null){
             return null;

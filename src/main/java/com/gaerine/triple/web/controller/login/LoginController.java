@@ -49,7 +49,7 @@ public class LoginController {
             if(tokenById == null){
                 token = tokenService.saveToken(loginMember.get().getMember_id()); // token 없으면 새로 저장
             }else{
-                token = tokenService.getToken(tokenById.getAccess_token()); // 기존에 token이 있고 만료시간 지나도 알아서 갱신
+                token = tokenService.getLoginToken(tokenById.getAccess_token()); // 기존에 token이 있고 만료시간 지나도 알아서 갱신
             }
 
             headers = new HttpHeaders();

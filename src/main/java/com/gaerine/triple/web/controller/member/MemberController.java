@@ -33,18 +33,21 @@ public class MemberController {
         this.tokenService = tokenService;
     }
 
+
+
+
     // 멤버 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<Member> getMember(@PathVariable("id") Long id, @RequestHeader("authorization") String header){
+    @GetMapping("/info")
+    public ResponseEntity<Member> getMember(@RequestHeader("authorization") String header){
 
         Optional<String> headerToken = Optional.ofNullable(header.replaceAll("Bearer ", ""));
 
         if(headerToken.isPresent()){
             // given
-            Member readMember = memberService.readMember(id);
-            Optional<Token> getToken = Optional.ofNullable(tokenService.getToken(headerToken.get()));
+            Optional<Token> getToken = Optional.ofNullable(tokenService.getLoginToken(headerToken.get()));
             //when
-            if(getToken.isPresent() && getToken.get().getMember_id().equals(id)){
+            if(getToken.isPresent()){
+                Member readMember = memberService.readMember(getToken.get().getMember_id());
                 // then
                 return ResponseEntity.status(HttpStatus.OK).body(readMember);
             }

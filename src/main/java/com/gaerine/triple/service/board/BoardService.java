@@ -27,4 +27,7 @@ public interface BoardService {
     int modifyDayPlace(List<SelectPlace> place,Long board_id,Long dayid);
 
     List<Place> findPlaceByIds(List<SelectPlace> place);
+
+    int saveNewPlace(Place place);
+
 }

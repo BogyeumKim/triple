@@ -31,4 +31,8 @@
         )
     </select>
 
+    <insert id="insertPlace" useGeneratedKeys="true" keyProperty="id">
+        insert into place (capital_id,korea_name,category,lat,lng) values (#{capital_id},#{korea_name},#{category},#{lat},#{lng});
+    </insert>
+
 </mapper>

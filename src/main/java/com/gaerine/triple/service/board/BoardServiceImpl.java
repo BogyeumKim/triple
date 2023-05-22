@@ -96,17 +96,23 @@ public class BoardServiceImpl implements BoardService{
             Method method = dayPlace.getClass().getMethod(getMethodDay);
             String getMethod = (String) method.invoke(dayPlace);
 
-            // 동적 호출한 메소드 SelectPlace List로 타입 저장
-            List<SelectPlace> oldPlace = objectMapper.readValue(getMethod, new TypeReference<List<SelectPlace>>() {});
+            if(getMethod == null){
+                String insertPlace = objectMapper.writeValueAsString(place);
+                result = mapper.updateDayPlace(insertPlace, board_id, dayid);
+            }else{
+                // 동적 호출한 메소드 SelectPlace List로 타입 저장
+                List<SelectPlace> oldPlace = objectMapper.readValue(getMethod, new TypeReference<List<SelectPlace>>() {});
 
-            // 기존 dayPlace와 새로 선택한 place 합침 when
-            List<SelectPlace> addPlace = new ArrayList<>();
-            addPlace.addAll(oldPlace);
-            addPlace.addAll(place);
+                // 기존 dayPlace와 새로 선택한 place 합침 when
+                List<SelectPlace> addPlace = new ArrayList<>();
+                addPlace.addAll(oldPlace);
+                addPlace.addAll(place);
 
-            String list = objectMapper.writeValueAsString(addPlace);
+                String list = objectMapper.writeValueAsString(addPlace);
 
-            result = mapper.updateDayPlace(list, board_id,dayid);
+                result = mapper.updateDayPlace(list, board_id,dayid);
+
+            }
 
             if(result !=0) {
                 return 1;
@@ -124,5 +130,10 @@ public class BoardServiceImpl implements BoardService{
         List<Long> list = place.stream().map(id -> id.getPlaceId()).collect(Collectors.toList());
         List<Place> result = mapper.selectPlaceByIds(list);
         return result;
+    }
+
+    @Override
+    public int saveNewPlace(Place place) {
+        return mapper.insertPlace(place);
     }
 }

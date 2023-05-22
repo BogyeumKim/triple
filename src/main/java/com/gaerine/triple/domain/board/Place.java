@@ -9,7 +9,6 @@ public class Place {
     private Long id;
     private Long capital_id;
     private String korea_name;
-    private String real_name;
     private String category;
     private Double lat;
     private Double lng;

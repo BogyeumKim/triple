@@ -11,6 +11,11 @@ import java.util.UUID;
 @Slf4j
 public class ViewController {
 
+    @GetMapping("/")
+    public String main(){
+        return "index";
+    }
+
     // register.html 이동
     @GetMapping("/member/register")
     public String moveReg(Model model){

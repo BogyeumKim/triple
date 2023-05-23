@@ -119,25 +119,37 @@
     const placeInfo=/*[[${place}]]*/;
     var plan  = /*[[${plan}]]*/;
 
-    function initMarker(planArr){
+    function initMarker(planArr) {
         const plan = JSON.parse(planArr);
 
-        var placeIds = plan.map((item)=> {
-            return item.placeId;
-        });
+        const markers = plan.map((item, i) => {
+            const place = placeInfo.find((info) => info.id === item.placeId);
+            if (!place) return null;
 
-        const filter1 = placeInfo.filter((info)=>{
-            return placeIds.includes(info.id)
-        });
+            const marker = new google.maps.Marker({
+                position: { lat: place.lat, lng: place.lng },
+                map: map,
+                label: `${i + 1}`,
+                optimized: false,
+            });
 
-        const marker = filter1.map((item)=>{
-            return  new google.maps.Marker({
-                position: { lat : item.lat, lng : item.lng},
+            return marker;
+        }).filter(marker => marker !== null);
+
+        if (markers.length >= 2) {
+            const path = markers.map(marker => marker.position);
+
+            new google.maps.Polyline({
+                path: path,
+                geodesic: true,
+                strokeColor: "#888888",
+                strokeOpacity: 1.0,
+                strokeWeight: 2,
                 map: map,
             });
-        });
-        return marker;
+        }
     }
+
 
      function newPlace(data){
         const boardId = /*[[${board.getTripBoard().getBoard_id()}]]*/;
@@ -256,10 +268,12 @@
 
         const days = Object.keys(plan).filter((key)=>key.startsWith('day') && key !== 'day_id');
 
-        days.forEach((item) => {
+        days.forEach((item,i) => {
             const dayData = plan[item];
             if (dayData !== null && dayData !== undefined) {
-                initMarker(dayData);
+                if(i==0){
+                    initMarker(dayData);
+                }
             }
         });
 

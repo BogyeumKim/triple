@@ -26,6 +26,15 @@
     #reqBtn{
         display: none;
     }
+    .newSearchContainer{
+    display: none;
+    }
+    .resSearchData{
+        cursor: pointer;
+    }
+    #resultSearchPlace{
+        width: fit-content;
+    }
 </style>
 <body>
 <div id="wrap">
@@ -43,19 +52,27 @@
 
             <div id="noResult">
                 <span>검색 결과가 없습니다.</span>
-                <button>나만의 장소 추가하기</button>
+                <button id="newPlace">나만의 장소 추가하기</button>
+            </div>
+
+            <div class="newSearchContainer">
+                장소검색 : <input type="text" id="placeSearch" ><button onclick="requestMapAPI()">검색</button>
             </div>
 
             <div id="selectedPlace">
                 <p>선택된 장소</p>
                 <div class="choicePlaces"></div>
-                <button id="reqBtn">선택완료</button>
+                <button id="reqBtn" onclick="submitPlace(selectPlace)">선택완료</button>
             </div>
+
+            <div id="resultSearchPlace">
+            </div>
+            <div id="resultSearchPlaceMap"></div>
         </div>
     </div>
 
     <div id="mid">
-        장소검색 : <input type="text" id="placeSearch" ><button onclick="requestMapAPI()">검색</button>
+
         <div th:each="item : ${board}" th:text="${item}"></div>
 
         <div id="map"></div>
@@ -63,8 +80,8 @@
 
 
         <th:block th:each="day : ${#numbers.sequence(1,board.getTripBoard().getPeriod())}">
-            <div th:text="${day}+'days'"></div>
-            <span th:if="${plan['getDay'+day]}" th:text="${plan['getDay'+day]}"></span>
+            <div th:text="${day}+'days'" class="days"></div>
+            <span th:if="${plan['getDay'+day]}" th:text="${plan['getDay'+day]}" class="spanDays"></span>
             <button type="button" class="addPlace" th:id="${day}">장소 추가</button>
         </th:block>
 
@@ -74,10 +91,20 @@
 
 
 </body>
-<!--<script th:inline="javascript" async th:src="@{'https://maps.googleapis.com/maps/api/js?key='+${key}+'&callback=initMap&v=weekly'}" defer></script>-->
+<script th:inline="javascript" async th:src="@{'https://maps.googleapis.com/maps/api/js?key='+${key}+'&callback=initMap&v=weekly'}" defer></script>
 
 <script th:inline="javascript">
     /*<![CDATA[*/
+
+    const key = /*[[${key}]]*/
+    let selectPlace = [];
+    const reqBtn = document.getElementById('reqBtn');
+
+    const newPlaceBtn = document.getElementById('newPlace');
+    newPlaceBtn.addEventListener('click',()=>{
+        const placeSearch = document.querySelector('.newSearchContainer');
+        placeSearch.style.display='block';
+    })
 
     const addPlaceBtn = document.querySelectorAll('.addPlace');
     addPlaceBtn.forEach(item =>{
@@ -112,18 +139,29 @@
         return marker;
     }
 
+     function newPlace(data){
+        const boardId = /*[[${board.getTripBoard().getBoard_id()}]]*/;
+        const dayId = reqBtn.id;
+        const url = `/newPlace/${boardId}?dayId=${dayId}`;
+        fetch(url,{method:"POST",headers:{'Content-Type': 'application/json'},body:JSON.stringify(data)})
+            .then(res => {if(res.status===200){return res.json()}})
+            .then(resData => {
+                addMarker(resData.lat,resData.lng);
+               const button = document.querySelector(`button.addPlace[id="${dayId}"]`);
+                const span = document.createElement("span");
+                span.textContent = `{"placeId":${resData.id},"placeName":"${resData.korea_name}"}`
+                button.parentNode.insertBefore(span,button);
+            });
+    }
 
 
-
-    const reqBtn = document.getElementById('reqBtn');
-    reqBtn.addEventListener('click',submitPlace);
-
-    function submitPlace(){
+    function submitPlace(data){
         const boardId = /*[[${board.getTripBoard().getBoard_id()}]]*/;
         const dayId = reqBtn.id;
         const url = `/reqPlace/${boardId}?dayId=${dayId}`;
-        console.log(url)
-        fetch(url,{method : "POST" , headers:{'Content-Type': 'application/json'},body:JSON.stringify(selectPlace)})
+        console.log(data)
+
+        fetch(url,{method : "POST" , headers:{'Content-Type': 'application/json'},body:JSON.stringify(data)})
             .then( res =>{
                 if(res.status === 200){
                     console.log(res);
@@ -133,8 +171,14 @@
                 }
             })
             .then(data => {
+                console.log(data);
                 data.forEach(item => {
                     addMarker(item.lat,item.lng)
+                    const span = document.createElement("span");
+                    span.textContent = `{"placeId":${item.id},"placeName":"${item.korea_name}"}`;
+                    const button = document.querySelector(`button.addPlace[id="${dayId}"]`);
+                    button.parentNode.insertBefore(span,button);
+
                 })
             })
             .catch(error => console.error(error))
@@ -169,7 +213,7 @@
 
     // 장소 리스트 클릭
     listPlace();
-    let selectPlace = [];
+
 
     function listPlace(){
         const place = document.querySelectorAll('.place');
@@ -234,10 +278,51 @@
     // 구글 장소 검색 API
   function requestMapAPI(){
       const place = document.getElementById("placeSearch").value;
-      const url = '/requsetPlace';
-      fetch(url,{method : "POST" , body:place})
-          .then( response =>{ return response.json();})
-          .then(res => console.log(res))
+      const url = '/requestPlace';
+      const data = {place : place, lat : /*[[${board.getCapital().lat}]]*/, lng: /*[[${board.getCapital().lng}]]*/};
+      fetch(url,{method : "POST" , body:JSON.stringify(data),headers:{'Content-Type': 'application/json'}})
+          .then( response =>{
+              return response.json();
+          })
+          .then(res => {
+              const resultSearchPlace = document.getElementById('resultSearchPlace');
+              const resultSearchPlaceMap = document.getElementById('resultSearchPlaceMap');
+              resultSearchPlace.innerHTML = '';
+              resultSearchPlaceMap.innerHTML = '';
+
+              res.results.forEach((item)=>{
+                  console.log(item);
+                  const addPlaceList = document.createElement("div");
+                  addPlaceList.classList.add('resSearchData');
+                  addPlaceList.innerHTML = item.name;
+                  resultSearchPlace.appendChild(addPlaceList);
+
+                  addPlaceList.addEventListener('click', () => {
+                      resultSearchPlaceMap.innerHTML = `<img src="https://maps.googleapis.com/maps/api/staticmap?center=${item.geometry.location.lat},${item.geometry.location.lng}&markers=${item.geometry.location.lat},${item.geometry.location.lng}&zoom=16&size=400x400&maptype=terrain&key=${key}">`;
+
+                      const confirmButton = document.createElement("button");
+                      confirmButton.innerHTML = "확인";
+                      confirmButton.addEventListener("click", () => {
+                          const itemData = {capital_id:/*[[${board.getTripBoard().capital}]]*/,korea_name:item.name,category:item.types[0],lat:item.geometry.location.lat,lng:item.geometry.location.lng};
+                          // 여기야
+                          newPlace(itemData);
+                          console.log("API 요청: ", item.name);
+                      });
+                      resultSearchPlaceMap.appendChild(confirmButton);
+
+
+                      const cancelButton = document.createElement("button");
+                      cancelButton.innerHTML = "취소";
+                      cancelButton.addEventListener("click", () => {
+                          // 취소 버튼 클릭 시 이미지 제거
+                          resultSearchPlaceMap.innerHTML = "";
+                      });
+                      resultSearchPlaceMap.appendChild(cancelButton);
+
+                  }); // addPlaceList 클릭
+              }); // res 반복
+
+          }) // then
           .catch(error => console.error(error))
   }
 

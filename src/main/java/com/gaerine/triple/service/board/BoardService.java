@@ -1,7 +1,9 @@
 package com.gaerine.triple.service.board;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gaerine.triple.domain.board.*;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public interface BoardService {
@@ -30,4 +32,5 @@ public interface BoardService {
 
     int saveNewPlace(Place place);
 
+    Place modifyNewDayPlace(Place place, Long board_id, Long dayid) throws JsonProcessingException, InvocationTargetException, IllegalAccessException, NoSuchMethodException;
 }

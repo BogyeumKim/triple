@@ -1,5 +1,6 @@
 package com.gaerine.triple.web.controller.board;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gaerine.triple.ApiKey;
 import com.gaerine.triple.domain.board.*;
 import com.gaerine.triple.service.board.BoardService;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -90,6 +93,15 @@ public class BoardController {
         int modify = service.modifyDayPlace(data, boardId,dayId);
         List<Place> places = service.findPlaceByIds(data);
         return modify == 1 ? ResponseEntity.ok().body(places) : ResponseEntity.badRequest().build();
+    }
+
+    @PostMapping("/newPlace/{boardId}")
+    public ResponseEntity<?> saveNewPlace(@RequestParam("dayId") Long dayId, @Valid @RequestBody Place data, @PathVariable("boardId") Long boardId) throws JsonProcessingException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        Optional<Place> place = Optional.ofNullable(service.modifyNewDayPlace(data, boardId, dayId));
+        if(place.isEmpty()){
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok().body(place);
     }
 
 }

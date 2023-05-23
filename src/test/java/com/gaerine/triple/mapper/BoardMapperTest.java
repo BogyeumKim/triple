@@ -1,5 +1,9 @@
 package com.gaerine.triple.mapper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaerine.triple.domain.board.*;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
@@ -9,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 
 @SpringBootTest
@@ -67,5 +69,34 @@ class BoardMapperTest {
         log.info("palce={}",places);
 
         Assertions.assertThat(places).isNotEmpty().isNotNull();
+    }
+
+    @Test
+    void selectDayPlaceByIdDay() throws JsonProcessingException {
+        Optional<DayPlace> dayPlace = Optional.ofNullable(mapper.selectDayPlaceByIdDay(16L, 1L));
+        if(dayPlace.isPresent()){
+            ObjectMapper objectMapper = new ObjectMapper();
+            String result = dayPlace.get().getDay1();
+
+            List<SelectPlace> selectPlaces = objectMapper.readValue(result, new TypeReference<List<SelectPlace>>() {});
+
+            Place pa = new Place();
+            pa.setId(14L);
+            pa.setCapital_id(5L);
+            pa.setKorea_name("테스트");
+            pa.setCategory("테스트카테고리");
+            pa.setLat(123.123123D);
+            pa.setLng(123.123123D);
+
+            SelectPlace test = new SelectPlace();
+            test.setPlaceId(pa.getId());
+            test.setPlaceName(pa.getKorea_name());
+
+            selectPlaces.addAll(Collections.singleton(test));
+
+            log.info("result={}",selectPlaces);
+
+        }
+
     }
 }

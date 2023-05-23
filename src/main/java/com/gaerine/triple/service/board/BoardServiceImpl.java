@@ -11,15 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -135,5 +127,43 @@ public class BoardServiceImpl implements BoardService{
     @Override
     public int saveNewPlace(Place place) {
         return mapper.insertPlace(place);
+    }
+
+    @Override
+    public Place modifyNewDayPlace(Place place, Long board_id, Long dayid) throws JsonProcessingException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+
+        int inserPlace = mapper.insertPlace(place);
+
+        if(inserPlace !=0 ) {
+            Optional<DayPlace> dayPlace = Optional.ofNullable(mapper.selectDayPlaceByIdDay(board_id, dayid));
+
+            List<SelectPlace> selectPlaces = new ArrayList<>();
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            SelectPlace newPlace = new SelectPlace();
+            newPlace.setPlaceId(place.getId());
+            newPlace.setPlaceName(place.getKorea_name());
+
+            if (dayPlace.isPresent()) {
+
+                String StringMethod = "getDay" + dayid;
+                Method method = dayPlace.get().getClass().getMethod(StringMethod);
+                String result = (String)method.invoke(dayPlace.get());
+                log.info("invoke={}",result);
+                if(result != null){
+                        selectPlaces = objectMapper.readValue(result, new TypeReference<List<SelectPlace>>() {});
+
+                    }
+            }
+
+            selectPlaces.add(newPlace);
+            log.info("SelectPlaces={}",selectPlaces);
+            String list = objectMapper.writeValueAsString(selectPlaces);
+            mapper.updateDayPlace(list,board_id,dayid);
+
+            return place;
+        }
+
+        return null;
     }
 }

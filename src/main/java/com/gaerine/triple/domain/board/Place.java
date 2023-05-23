@@ -2,11 +2,13 @@ package com.gaerine.triple.domain.board;
 
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 
 @Getter
+@Setter
 @ToString
 public class Place {
     private Long id;

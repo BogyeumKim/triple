@@ -20,6 +20,9 @@ public interface BoardMapper {
     @Select("select * from dayplace where board_id=#{id}")
     DayPlace selectDayPlaceByBoardId(Long board_id);
 
+    @Select("select day#{dayid} from dayplace where board_id=#{id}")
+    DayPlace selectDayPlaceByIdDay(@Param("id") Long board_id,@Param("dayid") Long dayid);
+
     @Select("SELECT * from capital where capital_name LIKE  '%${input}%'")
     List<Capital> selectCapitalByLikeInput(String input);
 

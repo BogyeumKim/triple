@@ -41,6 +41,7 @@ public class MapController {
                 .queryParam("location",req.get("lat")+","+req.get("lng"))
                 .queryParam("radius",2000)
                 .queryParam("fields", "formatted_address,name,rating,opening_hours,geometry")
+                .queryParam("language","ko")
                 .queryParam("key", key).build()
         ).retrieve().bodyToMono(Map.class).block();
 

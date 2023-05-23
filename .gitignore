@@ -15,6 +15,9 @@
 .idea/**/dictionaries
 .idea/**/shelf
 
+#bootStrap
+src/main/resources/static/bootstrap/*
+
 # AWS User-specific
 .idea/**/aws.xml
 

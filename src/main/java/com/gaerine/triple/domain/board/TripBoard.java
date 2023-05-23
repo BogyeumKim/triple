@@ -26,4 +26,14 @@ public class TripBoard {
         long days = ChronoUnit.DAYS.between(start, end);
         return days;
     }
+
+    public LocalDate getViewStartDay(){
+        LocalDate start = this.start_date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        return start;
+    }
+
+    public LocalDate getViewEndDay(){
+        LocalDate end = this.end_date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        return end;
+    }
 }

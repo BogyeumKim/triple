@@ -166,4 +166,39 @@ public class BoardServiceImpl implements BoardService{
 
         return null;
     }
+
+    @Override
+    public Map<Integer, List<Place>> userPlaces(Optional<TripBoardAndCapital> board, List<Place> place, DayPlace plan) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, JsonProcessingException {
+        Long period = board.get().getTripBoard().getPeriod();
+        Map<Integer,List<Place>> resultPlaces = new HashMap<>();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        for(int day = 1; day<=period; day++) {
+            String methodName = "getDay" + day;
+            Method method = plan.getClass().getMethod(methodName);
+
+            String invoke = (String) method.invoke(plan);
+            if(invoke == null){
+                continue;
+            }
+
+            List<SelectPlace> planData = objectMapper.readValue(invoke, new TypeReference<List<SelectPlace>>() {});
+            List<Place> matchedPlaces = new ArrayList<>();
+
+            for (SelectPlace item : planData) {
+                Long id = item.getPlaceId();
+
+                for (Place placeItem : place) {
+                    if (placeItem.getId() == id) {
+                        matchedPlaces.add(placeItem);
+                        break;
+                    }
+                }
+
+            }
+            resultPlaces.put(day, matchedPlaces);
+        }
+        return resultPlaces;
+    }
 }

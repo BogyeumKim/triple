@@ -1,9 +1,9 @@
 package com.gaerine.triple.service.board;
 
-import com.gaerine.triple.domain.board.Capital;
-import com.gaerine.triple.domain.board.SelectPlace;
-import com.gaerine.triple.domain.board.TripBoard;
-import com.gaerine.triple.domain.board.World;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gaerine.triple.domain.board.*;
 import com.gaerine.triple.mapper.BoardMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
@@ -17,13 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -85,6 +84,47 @@ class BoardServiceTest {
         List<Long> list = places.stream().map(id -> id.getPlaceId()).collect(Collectors.toList());
 
         log.info("places={}",list);
+    }
+
+    @Test
+    void getPlacewithPlan() throws JsonProcessingException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Optional<TripBoardAndCapital> board = Optional.ofNullable(service.getBoardCapitalById(16L));
+        List<Place> place = service.getPlaceById(board.get().getTripBoard().getCapital());
+        DayPlace plan = service.getDayPlaceByBoardId(16L);
+
+        Long period = board.get().getTripBoard().getPeriod();
+        Map<Integer,List<Place>> resultPlaces = new HashMap<>();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        for(int day = 1; day<=period; day++) {
+            String methodName = "getDay" + day;
+            Method method = plan.getClass().getMethod(methodName);
+
+            String invoke = (String) method.invoke(plan);
+            log.info("invoke={}",invoke);
+            if(invoke == null){
+                continue;
+            }
+
+            List<SelectPlace> planData = objectMapper.readValue(invoke, new TypeReference<List<SelectPlace>>() {});
+            List<Place> matchedPlaces = new ArrayList<>();
+
+            for (SelectPlace item : planData) {
+                Long id = item.getPlaceId();
+
+                for (Place placeItem : place) {
+                    if (placeItem.getId() == id) {
+                        matchedPlaces.add(placeItem);
+                        break;
+                    }
+                }
+
+            }
+            resultPlaces.put(day, matchedPlaces);
+        }
+
+        log.info("result={}",resultPlaces);
     }
 
 }

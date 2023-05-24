@@ -5,6 +5,8 @@ import com.gaerine.triple.domain.board.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public interface BoardService {
 
@@ -33,4 +35,6 @@ public interface BoardService {
     int saveNewPlace(Place place);
 
     Place modifyNewDayPlace(Place place, Long board_id, Long dayid) throws JsonProcessingException, InvocationTargetException, IllegalAccessException, NoSuchMethodException;
+
+    Map<Integer,List<Place>> userPlaces(Optional<TripBoardAndCapital> board, List<Place> place, DayPlace plan) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, JsonProcessingException;
 }

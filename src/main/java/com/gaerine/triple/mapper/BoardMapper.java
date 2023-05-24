@@ -43,5 +43,6 @@ public interface BoardMapper {
 
     int insertPlace(Place place);
 
-    Place selectPlaceByKoreaName(String koreaName);
+    @Select("select * from place where korea_name=#{name}")
+    int selectPlaceByKoreaName(String koreaName);
 }

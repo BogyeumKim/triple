@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaerine.triple.domain.board.*;
+import com.gaerine.triple.exception.PlaceDupleException;
 import com.gaerine.triple.mapper.BoardMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -132,39 +133,42 @@ public class BoardServiceImpl implements BoardService{
     @Override
     public Place modifyNewDayPlace(Place place, Long board_id, Long dayid) throws JsonProcessingException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
 
-        int inserPlace = mapper.insertPlace(place);
+        int count = mapper.selectPlaceByKoreaName(place.getKorea_name());
+        if(count>0){
+            throw new PlaceDupleException();
+        }
 
-        if(inserPlace !=0 ) {
-            Optional<DayPlace> dayPlace = Optional.ofNullable(mapper.selectDayPlaceByIdDay(board_id, dayid));
+        else {
+            int inserPlace = mapper.insertPlace(place);
+            if(inserPlace !=0 ){
+                Optional<DayPlace> dayPlace = Optional.ofNullable(mapper.selectDayPlaceByIdDay(board_id, dayid));
 
-            List<SelectPlace> selectPlaces = new ArrayList<>();
-            ObjectMapper objectMapper = new ObjectMapper();
+                List<SelectPlace> selectPlaces = new ArrayList<>();
+                ObjectMapper objectMapper = new ObjectMapper();
 
-            SelectPlace newPlace = new SelectPlace();
-            newPlace.setPlaceId(place.getId());
-            newPlace.setPlaceName(place.getKorea_name());
+                SelectPlace newPlace = new SelectPlace();
+                newPlace.setPlaceId(place.getId());
+                newPlace.setPlaceName(place.getKorea_name());
+                if (dayPlace.isPresent()) {
 
-            if (dayPlace.isPresent()) {
-
-                String StringMethod = "getDay" + dayid;
-                Method method = dayPlace.get().getClass().getMethod(StringMethod);
-                String result = (String)method.invoke(dayPlace.get());
-                log.info("invoke={}",result);
-                if(result != null){
+                    String StringMethod = "getDay" + dayid;
+                    Method method = dayPlace.get().getClass().getMethod(StringMethod);
+                    String result = (String)method.invoke(dayPlace.get());
+                    log.info("invoke={}",result);
+                    if(result != null){
                         selectPlaces = objectMapper.readValue(result, new TypeReference<List<SelectPlace>>() {});
 
                     }
+                }
+
+                selectPlaces.add(newPlace);
+                log.info("SelectPlaces={}",selectPlaces);
+                String list = objectMapper.writeValueAsString(selectPlaces);
+                mapper.updateDayPlace(list,board_id,dayid);
+                return place;
             }
-
-            selectPlaces.add(newPlace);
-            log.info("SelectPlaces={}",selectPlaces);
-            String list = objectMapper.writeValueAsString(selectPlaces);
-            mapper.updateDayPlace(list,board_id,dayid);
-
-            return place;
+            return null;
         }
-
-        return null;
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.gaerine.triple.service.board;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaerine.triple.domain.board.*;
 import com.gaerine.triple.exception.PlaceDupleException;
@@ -9,6 +10,7 @@ import com.gaerine.triple.mapper.BoardMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -77,28 +79,23 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
+    @Transactional
     public int modifyDayPlace(List<SelectPlace> place,Long board_id, Long dayid) {
         ObjectMapper objectMapper = new ObjectMapper();
         int result = 0;
-        try {
-            // 기존 dayplace 조회
-            DayPlace dayPlace = mapper.selectDayPlaceByBoardId(board_id);
 
-            // 메소드 동적 호출
-            String getMethodDay = "getDay" + dayid;
-            Method method = dayPlace.getClass().getMethod(getMethodDay);
-            String getMethod = (String) method.invoke(dayPlace);
+        Optional<String> dayData = Optional.ofNullable(mapper.selectDayPlaceToString(dayid,board_id));
 
-            if(getMethod == null){
+        try{
+            if(dayData.isEmpty()){
                 String insertPlace = objectMapper.writeValueAsString(place);
                 result = mapper.updateDayPlace(insertPlace, board_id, dayid);
             }else{
-                // 동적 호출한 메소드 SelectPlace List로 타입 저장
-                List<SelectPlace> oldPlace = objectMapper.readValue(getMethod, new TypeReference<List<SelectPlace>>() {});
+                List<SelectPlace> oldPlaces = objectMapper.readValue(dayData.get(), new TypeReference<List<SelectPlace>>() {});
 
-                // 기존 dayPlace와 새로 선택한 place 합침 when
+                // 기존 dayPlace와 새로 선택한 place 합침 [ 유저가 선택한 장소가 여러개일수있으니 새로 만들어서 넣기 ]
                 List<SelectPlace> addPlace = new ArrayList<>();
-                addPlace.addAll(oldPlace);
+                addPlace.addAll(oldPlaces);
                 addPlace.addAll(place);
 
                 String list = objectMapper.writeValueAsString(addPlace);
@@ -106,13 +103,12 @@ public class BoardServiceImpl implements BoardService{
                 result = mapper.updateDayPlace(list, board_id,dayid);
 
             }
-
-            if(result !=0) {
-                return 1;
-            }
-
-        } catch (JsonProcessingException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+        }catch (JsonProcessingException  e) {
             throw new RuntimeException(e);
+        }
+
+        if(result !=0) {
+            return 1;
         }
 
         return 0;

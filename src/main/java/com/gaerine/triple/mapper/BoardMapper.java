@@ -44,8 +44,8 @@ public interface BoardMapper {
 
     List<Place> selectPlaceByIds(@Param("ids") List<Long> ids);
 
-    int insertPlace(Place place);
+    Integer insertPlace(Place place);
 
     @Select("select * from place where korea_name=#{name}")
-    int selectPlaceByKoreaName(String koreaName);
+    Integer selectPlaceByKoreaName(String koreaName);
 }

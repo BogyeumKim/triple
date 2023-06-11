@@ -127,17 +127,19 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
+    @Transactional
     public Place modifyNewDayPlace(Place place, Long board_id, Long dayid) throws JsonProcessingException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
 
-        int count = mapper.selectPlaceByKoreaName(place.getKorea_name());
-        if(count>0){
+        Optional<Integer> count = Optional.ofNullable(mapper.selectPlaceByKoreaName(place.getKorea_name()));
+        if(count.isPresent()){
             throw new PlaceDupleException();
         }
 
         else {
-            int inserPlace = mapper.insertPlace(place);
-            if(inserPlace !=0 ){
-                Optional<DayPlace> dayPlace = Optional.ofNullable(mapper.selectDayPlaceByIdDay(board_id, dayid));
+            Optional<Integer> inserPlace = Optional.ofNullable(mapper.insertPlace(place));
+            if(inserPlace.isPresent() ){
+//                Optional<DayPlace> dayPlace = Optional.ofNullable(mapper.selectDayPlaceByIdDay(board_id, dayid));
+                Optional<String> oldPlaces = Optional.ofNullable(mapper.selectDayPlaceToString(dayid, board_id));
 
                 List<SelectPlace> selectPlaces = new ArrayList<>();
                 ObjectMapper objectMapper = new ObjectMapper();
@@ -145,16 +147,9 @@ public class BoardServiceImpl implements BoardService{
                 SelectPlace newPlace = new SelectPlace();
                 newPlace.setPlaceId(place.getId());
                 newPlace.setPlaceName(place.getKorea_name());
-                if (dayPlace.isPresent()) {
 
-                    String StringMethod = "getDay" + dayid;
-                    Method method = dayPlace.get().getClass().getMethod(StringMethod);
-                    String result = (String)method.invoke(dayPlace.get());
-                    log.info("invoke={}",result);
-                    if(result != null){
-                        selectPlaces = objectMapper.readValue(result, new TypeReference<List<SelectPlace>>() {});
-
-                    }
+                if (oldPlaces.isPresent()) {
+                    selectPlaces = objectMapper.readValue(oldPlaces.get(), new TypeReference<List<SelectPlace>>() {});
                 }
 
                 selectPlaces.add(newPlace);

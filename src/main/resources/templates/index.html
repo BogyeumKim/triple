@@ -97,7 +97,7 @@
                     <li role="presentation" th:text="${board.getTripBoard().getViewEndDay()}"></li>
                 </ul>
             </nav>
-            <h3 class="text-muted" th:text="${board.getCapital().capital_name}"> 여행</h3>
+            <h3 class="text-muted" th:text="${board.getCapital().capital_name+' 여행'}"></h3>
         </div>
 
         <div class="jumbotron sticky-top">
@@ -233,7 +233,7 @@
         const boardId = /*[[${board.getTripBoard().getBoard_id()}]]*/;
         const dayId = reqBtn.id;
         const url = `/reqPlace/${boardId}?dayId=${dayId}`;
-        console.log(data)
+
 
         fetch(url,{method : "POST" , headers:{'Content-Type': 'application/json'},body:JSON.stringify(data)})
             .then( res =>{
@@ -264,6 +264,11 @@
                 })
 
                 data.forEach(item => {
+                    if(newPlan[dayId] === undefined || newPlan[dayId] === null){
+                        newPlan[dayId]=[item];
+                    }else {
+                        newPlan[dayId].push(item);
+                    }
                     addMarker(item.lat,item.lng)
                     const cardContainer = document.createElement("div");
                     cardContainer.className = 'card mb-3';
@@ -316,6 +321,11 @@
                 }
             })
             .then(resData => {
+                if(newPlan[dayId] === undefined || newPlan[dayId] === null){
+                    newPlan[dayId]=[resData];
+                }else {
+                    newPlan[dayId].push(resData);
+                }
                 addMarker(resData.lat,resData.lng);
                 return true;
                 // const button = document.querySelector(`button.addPlace[id="${dayId}"]`);
@@ -331,7 +341,6 @@
 
     // 구글 마커추가 API
     function addMarker(lat, lng) {
-        console.log("add marker");
         const marker = new google.maps.Marker({
             position: {lat, lng},
             map: map,
@@ -482,7 +491,7 @@
 
     // 첫 실행시 1일차 마커만 찍어주기
     function initMarker(data) {
-        if(data !== null){
+        if(data !== null && data !== undefined){
             data.forEach((item,i)=>{
                 const marker = new google.maps.Marker({
                     position: { lat: item.lat, lng: item.lng },
@@ -496,8 +505,10 @@
     }
 
     function setMapOnAll(map) {
-        for (let i = 0; i < markers.length; i++) {
-            markers[i].setMap(map);
+        if(markers!==null && markers!==undefined){
+            for (let i = 0; i < markers.length; i++) {
+                markers[i].setMap(map);
+            }
         }
     }
 
@@ -522,6 +533,7 @@
     let map;
     let markers = [];
 
+    let newPlan =/*[[${places}]]*/;
     function initMap() {
         map = new google.maps.Map(document.getElementById("map"), {
             center: {lat: /*[[${board.getCapital().lat}]]*/, lng: /*[[${board.getCapital().lng}]]*/},
@@ -535,7 +547,7 @@
     var jumbotronHeight = document.querySelector('.jumbotron').offsetHeight;
     var marketingElement = document.querySelector('.marketing');
     var previousTopDay = null; // 화면에서 이전으로 표시된 날짜를 저장하는 변수
-    var customMargin = 200;
+    var customMargin = 190;
 
     marketingElement.addEventListener('scroll', function() {
         var scrollPosition = marketingElement.scrollTop;
@@ -556,9 +568,11 @@
             if (previousTopDay !== null) {
                 deleteMarkers();
                 const cutting = closestDay.textContent.split('일차')[0];
-                let planArr =/*[[${places}]]*/;
-                const dom = planArr[cutting];
+
+                let dom = newPlan[cutting];
                 initMarker(dom);
+
+
             }
         }
 

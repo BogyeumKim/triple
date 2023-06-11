@@ -9,13 +9,14 @@
     <meta name="author" content="">
 
     <link rel="canonical" href="https://getbootstrap.com/docs/3.4/examples/jumbotron-narrow/"/>
-
+    <link rel="shortcut icon" href="#">
     <title>Narrow Jumbotron Template for Bootstrap</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
 
-
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script src="/bootstrap/js/bootstrap.js"></script>
     <!-- Custom styles for this template -->
     <link href="/bootstrap/css/jumbotron-narrow.css" rel="stylesheet"/>
 
@@ -26,53 +27,547 @@
 <body>
 
 <div class="container">
-    <div class="header clearfix">
-        <nav>
-            <ul class="nav nav-pills pull-right">
-                <li role="presentation" class="active"><a href="#">Home</a></li>
-                <li role="presentation"><a href="#">About</a></li>
-                <li role="presentation"><a href="#">Contact</a></li>
+
+    <div class="container-narrow">
+        <div class="input-group mb-3">
+            <input type="search" class="form-control rounded" id="search" onkeyup="filter()" placeholder="관광지/맛집/숙소 검색" aria-label="Search" aria-describedby="search-addon" />
+            <button type="button" class="btn btn-outline-primary">search</button>
+        </div>
+
+        <div id="selectedPlace">
+            <div class="choicePlaces"></div>
+            <button id="reqBtn" class="btn-success" onclick="submitPlace(selectPlace)">선택완료</button>
+        </div>
+
+        <div class="d-block block-ul" id="listUl">
+            <ul class="list-group listInner" th:each="item : ${place}">
+                <li class="list-group-item place" th:id="${item.id}" th:text="${item.korea_name}"></li>
             </ul>
-        </nav>
-        <h3 class="text-muted">Project name</h3>
-    </div>
-
-    <div class="jumbotron">
-        <h1>Jumbotron heading</h1>
-        <p class="lead">Cras justo odio, dapibus ac facilisis in, egestas eget quam. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-        <p><a class="btn btn-lg btn-success" href="#" role="button">Sign up today</a></p>
-    </div>
-
-    <div class="row marketing">
-        <div class="col-lg-6">
-            <h4>Subheading</h4>
-            <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
-
-            <h4>Subheading</h4>
-            <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
-
-            <h4>Subheading</h4>
-            <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
         </div>
 
-        <div class="col-lg-6">
-            <h4>Subheading</h4>
-            <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
-
-            <h4>Subheading</h4>
-            <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
-
-            <h4>Subheading</h4>
-            <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
+        <div id="noResult" class="align-items-center justify-content-center">
+            <span>검색 결과가 없습니다.</span>
+            <button id="newPlace" class="btn btn-primary">나만의 장소 추가하기</button>
         </div>
+
     </div>
 
-    <footer class="footer">
-        <p>&copy; 2016 Company, Inc.</p>
-    </footer>
+    <div class="googleResult">
 
+        <div class="input-group mb-3">
+            <input type="search" class="form-control rounded" id="placeSearch" placeholder="새로운 장소 검색" aria-label="Search" aria-describedby="search-addon" />
+            <button type="button" class="btn btn-outline-primary" onclick="requestMapAPI()">search</button>
+        </div>
+
+
+        <div id="resultSearchPlace"></div>
+
+        <div id="resultSearchPlaceMap">
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <img id="searchIcon">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" id="cancelBtn" data-bs-dismiss="modal">취소</button>
+                            <button type="button" class="btn btn-primary"  id="confirmBtn">확인</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="container-md">
+        <div class="header clearfix">
+            <nav>
+                <ul class="nav nav-pills pull-right">
+                    <li role="presentation" class="active" th:text="${board.getTripBoard().getViewStartDay()}"></li>
+                    <li role="presentation">~</li>
+                    <li role="presentation" th:text="${board.getTripBoard().getViewEndDay()}"></li>
+                </ul>
+            </nav>
+            <h3 class="text-muted" th:text="${board.getCapital().capital_name}"> 여행</h3>
+        </div>
+
+        <div class="jumbotron sticky-top">
+            <div id="map" class="position-sticky"></div>
+        </div>
+
+        <div class="marketing overflow-scroll-y" style="height: 350px !important;">
+
+            <div class="col-lg-6">
+              <th:block th:each="day : ${#numbers.sequence(1,board.getTripBoard().getPeriod())}">
+                  <h4 th:text="${day}+'일차'" class="days"></h4>
+                  <div>
+                      <div class="card mb-3" th:if="${plan['getDay'+day]}" th:each="item : ${places.get(day)}">
+                          <div class="card-body">
+                              <h5 class="card-title" th:text="${item.korea_name}"></h5>
+                              <p class="card-text" th:text="${item.category}"></p>
+                          </div>
+                      </div>
+                      <button type="button" class="addPlace btn btn-primary mb-3" th:id="${day}">장소 추가</button>
+                  </div>
+              </th:block>
+            </div>
+
+        </div>
+    </div>
 </div> <!-- /container -->
 
 
 </body>
+<script th:inline="javascript" async th:src="@{'https://maps.googleapis.com/maps/api/js?key='+${key}+'&callback=initMap&v=weekly'}" defer></script>
+<!--<script-->
+<!--        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDS6rXzAmBViWbQMr9cAgGIF7GA0vY5RNE&callback=initMap&v=weekly"-->
+<!--        defer-->
+<!--&gt;</script>-->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    let selectPlace = [];
+    const reqBtn = document.getElementById('reqBtn');
+
+    function filter(){
+        const search = document.getElementById("search").value.toLowerCase().replace(/\s/g, "");
+        const listInner = document.getElementsByClassName("listInner");
+        const noResult = document.getElementById("noResult");
+        let place;
+        let isResultFound = false;
+
+        for (let i = 0; i < listInner.length; i++) {
+            place = listInner[i].getElementsByClassName("place");
+
+            if (place[0].innerHTML.toLowerCase().replace(/\s/g, "").indexOf(search) != -1) {
+                listInner[i].style.display = "grid"
+                isResultFound = true;
+            } else  {
+                listInner[i].style.display = "none"
+            }
+        }
+
+        if (!isResultFound) {
+            noResult.style.display = "grid";
+        } else {
+            noResult.style.display = "none";
+        }
+    }
+
+    // 장소 리스트 클릭
+    listPlace();
+
+    function listPlace(){
+        const place = document.querySelectorAll('.place');
+        const choicePlaces = document.querySelector('.choicePlaces');
+        const selectedPlace = document.querySelector('#selectedPlace');
+        place.forEach(dom => {
+            dom.addEventListener('click',(e) =>{
+                const placeName= e.target.innerText;
+                const placeId = e.target.getAttribute('id');
+                e.target.className +=' active';
+
+                selectedPlace.style.display = 'flex';
+
+                if(selectPlace.some(place => place.placeId === placeId)){
+                    alert('이미 선택한 장소입니다.');
+                    return;
+                }
+
+                const placeList = {placeId:placeId,placeName:placeName};
+                selectPlace.push(placeList);
+
+                let addPlaceList = document.createElement("span");
+                addPlaceList.className='choiceSpan';
+                console.log(placeList)
+                addPlaceList.innerHTML=`${placeName}<button aria-label="Close" class="btn-close" type="button"></button>`;
+                choicePlaces.appendChild(addPlaceList);
+
+                const closeBtn = addPlaceList.querySelector('.btn-close')
+                closeBtn.addEventListener('click',(e2)=>{
+                    const removeArr= e2.target.parentNode;
+                    const removeConfirm = confirm('삭제 하시겠습니까?');
+                    if(removeConfirm){
+                        selectPlace = selectPlace.filter(x=>x.placeName !== removeArr.textContent.toString());
+                        removeArr.remove();
+                        e.target.classList.remove('active')
+                        if(selectPlace.length <= 0){
+                            selectedPlace.style.display = 'none';
+                            reqBtn.style.display = 'none';
+                        }
+                    }
+                })
+
+
+                if(selectPlace.length >0 ){
+                    reqBtn.style.display = 'block';
+                }
+
+            })
+        })
+    }
+
+    // 장소 추가 버튼시 숨겨진 DOM 해제
+    const addPlaceBtn = document.querySelectorAll('.addPlace');
+    addPlaceBtn.forEach(item =>{
+        item.addEventListener('click',()=>{
+            const listWrap = document.querySelector('.container-narrow');
+            const bodyWrap = document.querySelector('.container-md');
+            listWrap.style.display = 'block';
+            bodyWrap.style.display = 'none';
+            reqBtn.id = item.id;
+        });
+    });
+
+
+    function submitPlace(data){
+        const boardId = /*[[${board.getTripBoard().getBoard_id()}]]*/;
+        const dayId = reqBtn.id;
+        const url = `/reqPlace/${boardId}?dayId=${dayId}`;
+        console.log(data)
+
+        fetch(url,{method : "POST" , headers:{'Content-Type': 'application/json'},body:JSON.stringify(data)})
+            .then( res =>{
+                if(res.status === 200){
+                    console.log(res);
+                    return res.json();
+                }else{
+                    alert("다시 선택해주세요.")
+                    throw new Error('선택 오류');
+                }
+            })
+            .then(data => {
+                const containerNarrow = document.querySelector('.container-narrow')
+                const containerMd = document.querySelector('.container-md')
+
+                containerNarrow.style.display='none';
+                containerMd.style.display='block';
+
+                selectPlace = [];
+
+                const selectedPlace =document.getElementById('selectedPlace');
+                selectedPlace.style.display = 'none';
+                const choicePlaces = document.querySelector('.choicePlaces');
+                choicePlaces.textContent='';
+                const listInner = document.querySelectorAll('.list-group-item.active')
+                listInner.forEach(list => {
+                    list.classList.remove('active');
+                })
+
+                data.forEach(item => {
+                    addMarker(item.lat,item.lng)
+                    const cardContainer = document.createElement("div");
+                    cardContainer.className = 'card mb-3';
+
+                    const cardBodyCon = document.createElement("div");
+                    cardBodyCon.className = 'card-body'
+
+                    const cardTitle = document.createElement("h5");
+                    cardTitle.className = 'card-title';
+                    cardTitle.innerText = `${item.korea_name}`;
+
+                    const cardBody = document.createElement("p");
+                    cardBody.className = "card-text";
+                    cardBody.innerText = `${item.category}`;
+
+                    cardBodyCon.appendChild(cardTitle);
+                    cardBodyCon.appendChild(cardBody);
+
+                    cardContainer.appendChild(cardBodyCon);
+
+
+                    const button = document.querySelector(`button.addPlace[id="${dayId}"]`);
+                    button.parentNode.insertBefore(cardContainer,button);
+
+                })
+            })
+            .catch(error => console.error(error))
+    }
+
+    // 새로운 장소 추가시 dom 조작
+    const newPlaceBtn = document.getElementById('newPlace');
+    newPlaceBtn.addEventListener('click',()=>{
+        const googleResult = document.querySelector('.googleResult');
+        const containerNarrow = document.querySelector('.container-narrow');
+        containerNarrow.style.display='none';
+        googleResult.style.display='block';
+    })
+
+    // 새로운장소 추가 API
+    function newPlace(data){
+        const boardId = /*[[${board.getTripBoard().getBoard_id()}]]*/;
+        const dayId = reqBtn.id;
+        const url = `/newPlace/${boardId}?dayId=${dayId}`;
+        return fetch(url,{method:"POST",headers:{'Content-Type': 'application/json'},body:JSON.stringify(data)})
+            .then(res => {
+                if(res.status===200){
+                    return res.json()
+                }else if (res.status===400){
+                    throw new Error('이미 등록된 장소입니다.');
+                }
+            })
+            .then(resData => {
+                addMarker(resData.lat,resData.lng);
+                return true;
+                // const button = document.querySelector(`button.addPlace[id="${dayId}"]`);
+                // const span = document.createElement("span");
+                // span.textContent = `{"placeId":${resData.id},"placeName":"${resData.korea_name}"}`
+                // button.parentNode.insertBefore(span,button);
+            })
+            .catch(err => {
+                alert(err);
+                return false;
+            });
+    }
+
+    // 구글 마커추가 API
+    function addMarker(lat, lng) {
+        console.log("add marker");
+        const marker = new google.maps.Marker({
+            position: {lat, lng},
+            map: map,
+            label: `${markers.length+1}`,
+        });
+        markers.push(marker);
+    }
+
+    // 구글 장소 검색 API
+    function requestMapAPI(){
+        const place = document.getElementById("placeSearch").value;
+        const url = '/requestPlace';
+        const data = {place : place, lat : /*[[${board.getCapital().lat}]]*/, lng: /*[[${board.getCapital().lng}]]*/};
+        fetch(url,{method : "POST" , body:JSON.stringify(data),headers:{'Content-Type': 'application/json'}})
+            .then( response =>{
+                return response.json();
+            })
+            .then(res => {
+                const resultSearchPlace = document.getElementById('resultSearchPlace');
+                const resultSearchPlaceMap = document.getElementById('resultSearchPlaceMap');
+                const key = /*[[${key}]]*/;
+
+                const confirmBtn = document.getElementById('confirmBtn');
+                const cancelBtn = document.getElementById('cancelBtn');
+                let selectData;
+                let resData;
+                var myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
+                res.results.forEach((item)=>{
+                    console.log(item);
+                    const cardDiv = document.createElement("div");
+                    cardDiv.classList.add('card');
+
+
+                    const cardBodyDiv = document.createElement("div");
+                    cardBodyDiv.classList.add('card-body');
+                    cardBodyDiv.classList.add('search-card');
+
+                    const cardImg = document.createElement("img");
+                    cardImg.classList.add('card-img');
+                    cardImg.src=item.icon;
+                    const wrapTitleText = document.createElement("div");
+                    wrapTitleText.classList.add('flexRow');
+
+                    const cardTitle = document.createElement("h5");
+                    cardTitle.classList.add('card-title');
+                    cardTitle.innerText = item.name;
+
+                    const cardText = document.createElement("span");
+                    cardText.classList.add("card-text")
+                    cardText.innerText = item.formatted_address;
+
+                    wrapTitleText.appendChild(cardTitle);
+                    wrapTitleText.appendChild(cardText);
+
+                    cardBodyDiv.appendChild(cardImg);
+                    cardBodyDiv.appendChild(wrapTitleText);
+
+                    cardDiv.appendChild(cardBodyDiv);
+                    resultSearchPlace.appendChild(cardDiv);
+
+                    const img = document.getElementById('searchIcon');
+                    const modalLabel = document.getElementById('exampleModalLabel');
+
+
+                    cardDiv.addEventListener('click', () => {
+                        img.src =`https://maps.googleapis.com/maps/api/staticmap?center=${item.geometry.location.lat},${item.geometry.location.lng}&markers=${item.geometry.location.lat},${item.geometry.location.lng}&zoom=16&size=400x400&maptype=terrain&key=${key}`;
+                        modalLabel.innerText=item.name
+                        myModal.show();
+                        selectData = {capital_id:/*[[${board.getTripBoard().capital}]]*/,korea_name:item.name,category:item.types[0],lat:item.geometry.location.lat,lng:item.geometry.location.lng};
+                        resData = item;
+                    });
+                }); // res 반복
+
+                confirmBtn.addEventListener("click", async () => {
+                    const success = await newPlace(selectData);
+                    if(success){
+                        //1.
+                            // 기존 새로추가한 장솔 날짜에 Card div 추가해주기
+                        const cardContainer = document.createElement("div");
+                        cardContainer.className = 'card mb-3';
+
+                        const cardBodyCon = document.createElement("div");
+                        cardBodyCon.className = 'card-body'
+
+                        const cardTitle = document.createElement("h5");
+                        cardTitle.className = 'card-title';
+                        cardTitle.innerText = `${resData.name}`;
+
+                        const cardBody = document.createElement("p");
+                        cardBody.className = "card-text";
+                        cardBody.innerText = `${resData.types[0]}`;
+
+                        cardBodyCon.appendChild(cardTitle);
+                        cardBodyCon.appendChild(cardBody);
+
+                        cardContainer.appendChild(cardBodyCon);
+
+
+                        const button = document.querySelector(`button.addPlace[id="${reqBtn.id}"]`);
+                        button.parentNode.insertBefore(cardContainer,button);
+
+                        //2.
+                            // 모달취소버튼 클릭 , googleResult 검색내용 및 검색데이터(div) 값 초기화
+                        cancelBtn.click();
+                        const resultSearchPlace = document.getElementById('resultSearchPlace');
+                        resultSearchPlace.replaceChildren();
+
+                        place.value= '';
+
+                        //3.
+                            // googleResult 숨겨주기
+                        const googleResult = document.querySelector('.googleResult');
+                        googleResult.style.display = 'none';
+
+                        //4.
+                            // container-narrow 숨겨주고 input 값 초기화
+                        const search = document.getElementById('search');
+                        search.value='';
+                        const placeSearch = document.getElementById('placeSearch');
+                        placeSearch.value='';
+
+                        const noResult = document.getElementById('noResult');
+                        noResult.style.display = 'none';
+
+                        const listInner = document.querySelectorAll(".listInner");
+
+                        listInner.forEach(item => {
+                            item.style.display = "grid";
+                        });
+
+                        const  listWrap= document.querySelector('.container-narrow');
+                        listWrap.style.display = 'none';
+
+                        const bodyWrap = document.querySelector('.container-md');
+                        bodyWrap.style.display = 'block';
+                    }else {
+                        throw new Error('잘못된 선택입니다.');
+                    }
+                });
+
+                cancelBtn.addEventListener("click", () => {
+                    myModal.hide();
+                });
+
+            }) // then
+            .catch(error => console.error(error))
+    }
+
+    // 첫 실행시 1일차 마커만 찍어주기
+    function initMarker(data) {
+        if(data !== null){
+            data.forEach((item,i)=>{
+                const marker = new google.maps.Marker({
+                    position: { lat: item.lat, lng: item.lng },
+                    map: map,
+                    label: `${i + 1}`,
+                    optimized: false,
+                });
+                markers.push(marker);
+            });
+        }
+    }
+
+    function setMapOnAll(map) {
+        for (let i = 0; i < markers.length; i++) {
+            markers[i].setMap(map);
+        }
+    }
+
+    // Removes the markers from the map, but keeps them in the array.
+    function hideMarkers() {
+        setMapOnAll(null);
+    }
+
+    // Shows any markers currently in the array.
+    function showMarkers() {
+        setMapOnAll(map);
+    }
+
+    // Deletes all markers in the array by removing references to them.
+    function deleteMarkers() {
+        hideMarkers();
+        markers = [];
+    }
+
+
+    let planArr =/*[[${places.get(1)}]]*/;
+    let map;
+    let markers = [];
+
+    function initMap() {
+        map = new google.maps.Map(document.getElementById("map"), {
+            center: {lat: /*[[${board.getCapital().lat}]]*/, lng: /*[[${board.getCapital().lng}]]*/},
+            zoom: 12,
+            disableDefaultUI: true,
+        });
+        initMarker(planArr);
+    }
+
+
+    var jumbotronHeight = document.querySelector('.jumbotron').offsetHeight;
+    var marketingElement = document.querySelector('.marketing');
+    var previousTopDay = null; // 화면에서 이전으로 표시된 날짜를 저장하는 변수
+    var customMargin = 200;
+
+    marketingElement.addEventListener('scroll', function() {
+        var scrollPosition = marketingElement.scrollTop;
+        var closestDay = null;
+
+        var daysElements = marketingElement.querySelectorAll('.days');
+        daysElements.forEach(function(day) {
+            var h4Offset = day.offsetTop;
+            var h4Position = h4Offset - jumbotronHeight - customMargin;
+
+            if (scrollPosition >= h4Position) {
+                closestDay = day;
+            }
+        });
+
+        // 현재 화면에 보이는 날짜가 이전에 화면에 보인 날짜와 다를 경우 로그를 출력
+        if (closestDay !== null && closestDay !== previousTopDay) {
+            if (previousTopDay !== null) {
+                deleteMarkers();
+                const cutting = closestDay.textContent.split('일차')[0];
+                let planArr =/*[[${places}]]*/;
+                const dom = planArr[cutting];
+                initMarker(dom);
+            }
+        }
+
+        previousTopDay = closestDay; // 이전으로 표시된 날짜를 업데이트
+    });
+
+
+    window.initMap = initMap;
+
+    /*]]>*/
+</script>
 </html>

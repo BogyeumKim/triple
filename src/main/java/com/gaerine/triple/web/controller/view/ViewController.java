@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gaerine.triple.ApiKey;
 import com.gaerine.triple.domain.board.DayPlace;
 import com.gaerine.triple.domain.board.Place;
+import com.gaerine.triple.domain.board.TripBoard;
 import com.gaerine.triple.domain.board.TripBoardAndCapital;
 import com.gaerine.triple.service.board.BoardService;
 import lombok.RequiredArgsConstructor;
@@ -34,13 +35,25 @@ public class ViewController {
 
     @GetMapping("/")
     public String main(Model model) throws JsonProcessingException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        Optional<TripBoardAndCapital> board = Optional.ofNullable(service.getBoardCapitalById(16L));
+        Long boardId= 16L;
+
+        Optional<TripBoardAndCapital> board = Optional.ofNullable(service.getBoardCapitalById(boardId));
 
         if(board.isEmpty()) {
             // 에러 view 만들어서 리턴시키기 , 로그인 검증도 추가하자)
             return null;
         }
-        List<Place> place = service.getPlaceById(board.get().getTripBoard().getCapital());
+//        List<Place> place = service.getPlaceById(board.get().getTripBoard().getCapital());
+
+        List<Place> place = board.map(TripBoardAndCapital::getTripBoard)
+                .map(TripBoard::getCapital)
+                .map(service::getPlaceById)
+                .orElseGet(() -> {
+                    // 에러 처리
+                    return null;
+                });
+
+
         DayPlace plan = service.getDayPlaceByBoardId(16L);
         Map<Integer, List<Place>> userPlaces = service.userPlaces(board, place, plan);
 

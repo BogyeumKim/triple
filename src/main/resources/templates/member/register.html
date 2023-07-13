@@ -20,9 +20,38 @@
         <img th:src="@{/img/naverLoginBtn.png}" width="200" height="50">
     </button>
 
+    </br>
+    <button id="testBtn">테스트</button>
+    <div class="testDiv"></div>
 
 </body>
 <script th:inline="javascript">
+
+
+
+
+    initTest();
+    async function initTest(){
+        const testAPI = await fetch('/member/test', { method: "GET"});
+        const data = await testAPI.json();
+
+        const testDiv = document.querySelector('.testDiv');
+        const spanDom = document.createElement('span');
+        spanDom.classList.add('testClass');
+        spanDom.textContent = `{ID:${data.user_id}}, NICK:${data.user_nick}}`;
+        testDiv.appendChild(spanDom);
+
+        clickEvent();
+    }
+
+    const clickEvent = () => {
+        const testClick = document.querySelector('.testClass');
+        testClick.addEventListener('click', () => {
+            alert("BOOM");
+        });
+    }
+
+
 
   const subBtn = document.getElementById("subBtn");
   subBtn.addEventListener("click",registerFetch);
@@ -78,7 +107,7 @@
 
 
   async function refreshToken() {
-      const res = await fetch('/member/newToken', { method: "POST", credentials: "include" });
+      const res = await fetch('/member/newToken', { method: "POST", credentials: "include" }); // 쿠키에 담긴 리프레쉬 토큰을 포함하여 API 요청하려면 credentials 속성 필요.
       if (res.status === 200) {
           let token = res.headers.get("Authorization");
           localStorage.setItem("Authorization", token);

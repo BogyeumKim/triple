@@ -34,6 +34,14 @@ public class MemberController {
         this.tokenService = tokenService;
     }
 
+    @GetMapping("/test")
+    public Member test(){
+        Member member = new Member();
+        member.setUser_id("testId");
+        member.setUser_nick("Nick");
+        return member;
+    }
+
     @PostMapping("/newToken")
     public ResponseEntity<String> renewToken(@CookieValue(name = "refreshToken",required = false) Optional<String> refreshToken){
         log.info("Cookie token={}",refreshToken);

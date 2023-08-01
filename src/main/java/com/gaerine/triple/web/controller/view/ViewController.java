@@ -22,16 +22,12 @@ import java.util.UUID;
 
 @Controller
 @Slf4j
+@RequiredArgsConstructor
 public class ViewController {
 
     private final BoardService service;
     private final ApiKey apiKey;
 
-    @Autowired
-    public ViewController(BoardService service, ApiKey apiKey) {
-        this.service = service;
-        this.apiKey = apiKey;
-    }
 
     @GetMapping("/")
     public String main(Model model) throws JsonProcessingException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
@@ -67,7 +63,7 @@ public class ViewController {
     }
 
     // register.html 이동
-    @GetMapping("/member/register")
+    @GetMapping("/login")
     public String moveReg(Model model){
         String state = UUID.randomUUID().toString();
         model.addAttribute("state",state);
@@ -78,5 +74,10 @@ public class ViewController {
     @GetMapping("/map")
     public String moveBoard(){
         return "board/map";
+    }
+
+    @GetMapping("/test")
+    public String moveTest(){
+        return "test";
     }
 }

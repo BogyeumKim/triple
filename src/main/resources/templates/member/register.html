@@ -2,10 +2,18 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>회원가입</title>
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
+
+<style>
+
+</style>
 <body>
+<!--
 
     유저 아이디 : <input type="text"  id="regUserId">
     </br>
@@ -24,13 +32,80 @@
     <button id="testBtn">테스트</button>
     <div class="testDiv"></div>
 
+-->
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="login-tab" data-bs-toggle="tab" href="#login-form">
+                             로그인
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="register-tab" data-bs-toggle="tab" href="#register-form">회원가입</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="login-form">
+
+                                <div class="mb-3">
+                                    <label for="login-id" class="form-label">아이디</label>
+                                    <input type="text" class="form-control" id="login-id" placeholder="ID를 입력하세요.">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="login-password" class="form-label">비밀번호</label>
+                                    <input type="password" class="form-control" id="login-password" placeholder="PW를 입력하세요.">
+                                </div>
+                                <button type="submit" id="loginBtn" class="btn btn-primary w-100">로그인</button>
+
+                            <div class="text-center mt-3">
+                                <a class="btn btn-outline-info" onclick="showPopUp()" >
+                                    <img th:src="@{/img/naverBtn.png}" alt="네이버 로그인" style="max-height:50px;">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="register-form">
+
+                                <div class="mb-3">
+                                    <label for="register-username" class="form-label">아이디</label>
+                                    <input type="text" class="form-control" id="register-username" placeholder="ID를 입력하세요.">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="register-nick" class="form-label">닉네임</label>
+                                    <input type="email" class="form-control" id="register-nick" placeholder="닉네임을 입력하세요.">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="register-password" class="form-label">비밀번호</label>
+                                    <input type="password" class="form-control" id="register-password" placeholder="비밀번호를 입력하세요.">
+                                </div>
+                                <button type="submit" id="subBtn" class="btn btn-primary w-100">회원가입</button>
+
+                            <div class="text-center mt-3">
+                                <a class="btn btn-outline-info" onclick="showPopUp()" >
+                                    <img th:src="@{/img/naverBtn.png}" alt="네이버 회원가입" style="max-height:50px;">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 부트스트랩 JS 및 Popper.js, jQuery 라이브러리 링크 -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 </body>
 <script th:inline="javascript">
 
 
-
-
-    initTest();
+    /*initTest();
     async function initTest(){
         const testAPI = await fetch('/member/test', { method: "GET"});
         const data = await testAPI.json();
@@ -42,16 +117,25 @@
         testDiv.appendChild(spanDom);
 
         clickEvent();
-    }
+    }*/
 
-    const clickEvent = () => {
-        const testClick = document.querySelector('.testClass');
-        testClick.addEventListener('click', () => {
-            alert("BOOM");
-        });
-    }
+    const registerDom = document.querySelector('#register-tab');
+    registerDom.addEventListener('click',()=>{
+        let user_id = document.getElementById("register-username");
+        let user_pw = document.getElementById("register-password");
+        let user_nick = document.getElementById("register-nick");
+        user_id.value='';
+        user_pw.value='';
+        user_nick.value=''
+    })
 
-
+    const loginDom = document.querySelector('#login-tab');
+    loginDom.addEventListener('click',()=>{
+        let user_id = document.getElementById("login-id");
+        let user_pw = document.getElementById("login-password");
+        user_id.value='';
+        user_pw.value='';
+    })
 
   const subBtn = document.getElementById("subBtn");
   subBtn.addEventListener("click",registerFetch);
@@ -60,8 +144,8 @@
   loginBtn.addEventListener("click",loginFetch);
 
   function loginFetch(){
-      const user_id = document.getElementById("regUserId").value;
-      const user_pw = document.getElementById("regUserPw").value;
+      const user_id = document.getElementById("login-id").value;
+      const user_pw = document.getElementById("login-password").value;
       const url = '/login';
       const data = JSON.stringify({user_id,user_pw});
       console.log(data)
@@ -72,6 +156,7 @@
                 console.log(token);
                 localStorage.setItem("Authorization",token);
                 alert("로그인 성공!!")
+                memberInfoFetch();
               }else{
                   alert("로그인 실패ㅠ")
                   throw new Error("로그인 실패");
@@ -120,12 +205,10 @@
   }
 
 
-
-
   function registerFetch(){
-      const user_id = document.getElementById("regUserId").value;
-      const user_pw = document.getElementById("regUserPw").value;
-      const user_nick = document.getElementById("regUserNick").value;
+      const user_id = document.getElementById("register-username").value;
+      const user_pw = document.getElementById("register-password").value;
+      const user_nick = document.getElementById("register-nick").value;
       const url = '/member/';
       const data = JSON.stringify({user_id,user_pw,user_nick});
       console.log(data)

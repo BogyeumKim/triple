@@ -61,7 +61,13 @@ public class LoginController {
                 cookie.setHttpOnly(true);
                 cookie.setPath("/");
 
+                Cookie cookie2 = new Cookie("Authorization",token.getAccess_token());
+                cookie2.setMaxAge(7 * 24 * 60 * 60);
+                cookie2.setHttpOnly(true);
+                cookie2.setPath("/");
+
                 response.addCookie(cookie);
+                response.addCookie(cookie2);
             }
         }
 

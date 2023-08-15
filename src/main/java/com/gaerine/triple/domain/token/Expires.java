@@ -1,5 +1,8 @@
 package com.gaerine.triple.domain.token;
 
-public interface Expires {
-    Long EXPIRES_IN = 3600L;
+public class Expires {
+    private Expires() {
+    }
+
+    public static final Long EXPIRES_IN = 3600L;
 }

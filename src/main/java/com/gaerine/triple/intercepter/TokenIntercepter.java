@@ -25,27 +25,28 @@ public class TokenIntercepter implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        log.info("preHandle");
         Cookie[] cookies = request.getCookies();
-        Optional<Cookie> authorizationCookie = Arrays.stream(cookies != null ? cookies : new Cookie[0])
-                .filter(cookie -> "Authorization".equals(cookie.getName()))
-                .findFirst();
+        if (cookies != null) {
+            Optional<Cookie> authorizationCookie = Arrays.stream(cookies)
+                    .filter(cookie -> "Authorization".equals(cookie.getName()))
+                    .findFirst();
 
-        log.info("authHeader={}",authorizationCookie.get().getValue());
-        if (authorizationCookie.isPresent()) {
-            String token = authorizationCookie.get().getValue();
+            if (authorizationCookie.isPresent()) {
+                String token = authorizationCookie.get().getValue();
+                Token validToken = service.validationToken(token);
 
-            Token validToken = service.validationToken(token);
-            if (validToken !=null) {
-                log.info("토큰존재함!");
-                return true;
-            }else{
-                log.info("토큰 이상함!");
-                response.sendRedirect("/login");
+                if (validToken != null) {
+                    log.info("토큰존재함!");
+                    return true;
+                } else {
+                    log.info("토큰 이상함!");
+                    response.sendRedirect("/login");
+                }
             }
-        }else{
-            response.sendRedirect("/login");
         }
 
+        response.sendRedirect("/login");
         return false;
     }
 

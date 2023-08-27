@@ -1,6 +1,8 @@
 package com.gaerine.triple.intercepter;
 
 import com.gaerine.triple.domain.token.Token;
+import com.gaerine.triple.exception.TokenExpiredException;
+import com.gaerine.triple.exception.TokenNotFoundException;
 import com.gaerine.triple.service.token.TokenServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,18 +36,19 @@ public class TokenIntercepter implements HandlerInterceptor {
 
             if (authorizationCookie.isPresent()) {
                 String token = authorizationCookie.get().getValue();
-                Token validToken = service.validationToken(token);
-
-                if (validToken != null) {
-                    log.info("토큰존재함!");
-                    return true;
-                } else {
-                    log.info("토큰 이상함!");
+                try {
+                    Token validToken = service.validationToken(token);
+                    if (validToken != null) {
+                        log.info("토큰존재함!");
+                        return true;
+                    }
+                } catch (TokenExpiredException | TokenNotFoundException e) {
+                    log.info("토큰 만료 or 찾을수없음.");
                     response.sendRedirect("/login");
+                    return false;
                 }
             }
         }
-
         response.sendRedirect("/login");
         return false;
     }

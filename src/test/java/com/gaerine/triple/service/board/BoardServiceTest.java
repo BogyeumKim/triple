@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaerine.triple.domain.board.*;
+import com.gaerine.triple.domain.member.Member;
 import com.gaerine.triple.mapper.BoardMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
@@ -37,6 +38,7 @@ class BoardServiceTest {
 
 //    @InjectMocks
     @Autowired private BoardServiceImpl service;
+    @Autowired private TestService service2;
 
     @Test
     void getWorld() {
@@ -126,5 +128,16 @@ class BoardServiceTest {
 
         log.info("result={}",resultPlaces);
     }
+
+
+
+    @Test
+    void testRouting(){
+        Member local = service2.testLocal();
+        Member cloude = service2.testClude();
+        log.info("local ={}",local);
+        log.info("cloude ={}",cloude);
+    }
+
 
 }

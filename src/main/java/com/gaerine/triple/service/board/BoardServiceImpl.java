@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -56,7 +57,7 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public int saveDayPlace(Long board_id) {
+    public int saveDayPlace(TripBoard board_id) {
         return mapper.insertDayPlace(board_id);
     }
 
@@ -164,6 +165,8 @@ public class BoardServiceImpl implements BoardService{
 
     @Override
     public Map<Integer, List<Place>> userPlaces(Optional<TripBoardAndCapital> board, List<Place> place, DayPlace plan) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, JsonProcessingException {
+        Map<Long, Place> placeMap = place.stream().collect(Collectors.toMap(Place::getId, Function.identity()));
+
         Long period = board.get().getTripBoard().getPeriod();
         Map<Integer,List<Place>> resultPlaces = new HashMap<>();
 
@@ -184,12 +187,16 @@ public class BoardServiceImpl implements BoardService{
             for (SelectPlace item : planData) {
                 Long id = item.getPlaceId();
 
-                for (Place placeItem : place) {
+                Place placeItem = placeMap.get(id);
+                if (placeItem != null) {
+                    matchedPlaces.add(placeItem);
+                }
+                /*for (Place placeItem : place) {
                     if (placeItem.getId() == id) {
                         matchedPlaces.add(placeItem);
                         break;
                     }
-                }
+                }*/
 
             }
             resultPlaces.put(day, matchedPlaces);

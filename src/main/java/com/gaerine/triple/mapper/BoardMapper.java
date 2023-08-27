@@ -1,6 +1,7 @@
 package com.gaerine.triple.mapper;
 
 import com.gaerine.triple.domain.board.*;
+import com.gaerine.triple.domain.member.Member;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -31,7 +32,7 @@ public interface BoardMapper {
 
     int insertTripBoard(TripBoard data);
 
-    int insertDayPlace(Long board_id);
+    int insertDayPlace(TripBoard board_id);
 
     @Select("select * from capital where capital_id=#{id}")
     Capital selectCapitalById(Long capital_id);
@@ -48,4 +49,7 @@ public interface BoardMapper {
 
     @Select("select * from place where korea_name=#{name}")
     Integer selectPlaceByKoreaName(String koreaName);
+
+    @Select("select * from member where member_id=1")
+    Member getMemberTest();
 }

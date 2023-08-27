@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -61,28 +62,40 @@ public class BoardController {
 
         TripBoard tripBoard = service.saveBoard(data);
         if(tripBoard.getBoard_id() != null ){
-            service.saveDayPlace(tripBoard.getBoard_id());
+            service.saveDayPlace(tripBoard);
         }
         return tripBoard.getBoard_id() != null ? ResponseEntity.ok().body(tripBoard) : ResponseEntity.badRequest().build();
     }
 
     @GetMapping("/board/{boardId}")
-    public String readBoard(@PathVariable Long boardId,Model model){
+    public String readBoard(@PathVariable Long boardId,Model model) throws JsonProcessingException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         Optional<TripBoardAndCapital> board = Optional.ofNullable(service.getBoardCapitalById(boardId));
 
         if(board.isEmpty()) {
             // 에러 view 만들어서 리턴시키기 , 로그인 검증도 추가하자)
             return null;
         }
-        List<Place> place = service.getPlaceById(board.get().getTripBoard().getCapital());
+
+//        List<Place> place = service.getPlaceById(board.get().getTripBoard().getCapital());
+        List<Place> place = board.map(TripBoardAndCapital::getTripBoard)
+                .map(TripBoard::getCapital)
+                .map(service::getPlaceById)
+                .orElseGet(() -> {
+                    // 에러 처리
+                    return null;
+                });
+
         DayPlace plan = service.getDayPlaceByBoardId(boardId);
+        Map<Integer, List<Place>> userPlaces = service.userPlaces(board, place, plan);
 
         model.addAttribute("board",board.get())
                 .addAttribute("key",apiKey.getApiKey())
                 .addAttribute("place",place)
-                .addAttribute("plan",plan);
+                .addAttribute("plan",plan)
+                .addAttribute("places",userPlaces);
 
-        return "board/map";
+//        return "board/map";
+        return "index";
     }
 
     @PostMapping("/reqPlace/{boardId}")
@@ -102,6 +115,16 @@ public class BoardController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok().body(place);
+    }
+
+    @PostMapping("/test")
+    public ResponseEntity<?> test(@RequestBody Map<String, Object> test) {
+        log.info("test={}",test.get("test"));
+        log.info("test={}",test.get("test") == null);
+        log.info("test={}",String.valueOf(test.get("test")).isEmpty());
+        log.info("test={}", ((List<?>)test.get("test")).isEmpty() );
+        log.info("test={}", ((List<String>)test.get("test")).isEmpty() );
+        return ResponseEntity.ok().build();
     }
 
 }

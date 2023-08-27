@@ -22,7 +22,7 @@ public interface BoardService {
 
     TripBoard saveBoard(TripBoard data);
 
-    int saveDayPlace(Long board_id);
+    int saveDayPlace(TripBoard board_id);
 
     TripBoardAndCapital getBoardCapitalById(Long board_id);
 

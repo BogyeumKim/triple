@@ -188,7 +188,7 @@
 
                 let addPlaceList = document.createElement("span");
                 addPlaceList.className='choiceSpan';
-                console.log(placeList)
+                // console.log(placeList)
                 addPlaceList.innerHTML=`${placeName}<button aria-label="Close" class="btn-close" type="button"></button>`;
                 choicePlaces.appendChild(addPlaceList);
 
@@ -238,7 +238,7 @@
         fetch(url,{method : "POST" , headers:{'Content-Type': 'application/json'},body:JSON.stringify(data)})
             .then( res =>{
                 if(res.status === 200){
-                    console.log(res);
+                    // console.log(res);
                     return res.json();
                 }else{
                     alert("다시 선택해주세요.")
@@ -309,11 +309,13 @@
 
     // 새로운장소 추가 API
     function newPlace(data){
+        console.log("새로운장소 :",data)
         const boardId = /*[[${board.getTripBoard().getBoard_id()}]]*/;
         const dayId = reqBtn.id;
         const url = `/newPlace/${boardId}?dayId=${dayId}`;
         return fetch(url,{method:"POST",headers:{'Content-Type': 'application/json'},body:JSON.stringify(data)})
             .then(res => {
+                console.log("res={}",res);
                 if(res.status===200){
                     return res.json()
                 }else if (res.status===400){
@@ -369,7 +371,7 @@
                 let resData;
                 var myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
                 res.results.forEach((item)=>{
-                    console.log(item);
+                    // console.log(item);
                     const cardDiv = document.createElement("div");
                     cardDiv.classList.add('card');
 
@@ -409,6 +411,7 @@
                         img.src =`https://maps.googleapis.com/maps/api/staticmap?center=${item.geometry.location.lat},${item.geometry.location.lng}&markers=${item.geometry.location.lat},${item.geometry.location.lng}&zoom=16&size=400x400&maptype=terrain&key=${key}`;
                         modalLabel.innerText=item.name
                         myModal.show();
+                        selectData = null;
                         selectData = {capital_id:/*[[${board.getTripBoard().capital}]]*/,korea_name:item.name,category:item.types[0],lat:item.geometry.location.lat,lng:item.geometry.location.lng};
                         resData = item;
                     });
@@ -476,9 +479,10 @@
 
                         const bodyWrap = document.querySelector('.container-md');
                         bodyWrap.style.display = 'block';
-                    }else {
-                        throw new Error('잘못된 선택입니다.');
                     }
+                    // else {
+                    //     throw new Error('잘못된 선택입니다.');
+                    // }
                 });
 
                 cancelBtn.addEventListener("click", () => {
@@ -488,6 +492,24 @@
             }) // then
             .catch(error => console.error(error))
     }
+
+    const testFunction = () => {
+        const url = "/test"
+        const data = {};
+        data.test=[];
+        fetch(url, {method: "POST", headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)})
+            .then(res => {
+                if (res.status === 200) {
+                    // console.log(res);
+                    return res.json();
+                }
+            }).then(val => {
+            console.log(val)
+        });
+    }
+    // testFunction();
+
+
 
     // 첫 실행시 1일차 마커만 찍어주기
     function initMarker(data) {

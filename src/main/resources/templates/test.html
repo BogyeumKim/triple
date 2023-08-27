@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div>
+  <select nam="test_Select" id="test_Select">
+      <option id="test_Options">선택하세요</option>
+  </select>
+</div>
+
+<button id="submit">확인</button>
+
+</body>
+</html>
+
+<script>
+
+    function testReq() {
+        const selectDom = document.querySelector('#test_Select');
+        return fetch("/testGetList", {method : "GET",headers:{'Content-Type': 'application/json'}})
+            .then(res => {
+                return res.json();
+            })
+            .then(data => {
+                let HTML = "";
+                data.forEach((item)=>{
+                    const option = document.createElement('option');
+                    option.setAttribute('value', item);
+                    option.textContent = item;
+                    selectDom.appendChild(option);
+                    // HTML += "<option id='test_options' value='" + item + "'>" + item + "</option>";
+                });
+                // selectDom.insertAdjacentHTML('beforeend',HTML);
+
+                console.log(data)
+            })
+            .catch(err => console.log(err));
+    }
+
+    testReq();
+    clickEvent();
+
+    function clickEvent(){
+        const clickDom = document.querySelector('#submit');
+        clickDom.addEventListener('click',getVal);
+    }
+
+    function getVal(){
+        const selectDom = document.querySelector('#test_Select');
+        // selectDom.addEventListener('change',()=>{
+            const value = selectDom.options[selectDom.selectedIndex].value;
+            const text = selectDom.options[selectDom.selectedIndex].text;
+            console.log(value,text);
+        // })
+    }
+
+
+
+
+</script>

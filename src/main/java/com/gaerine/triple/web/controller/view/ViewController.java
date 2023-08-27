@@ -29,7 +29,7 @@ public class ViewController {
     private final ApiKey apiKey;
 
 
-    @GetMapping("/")
+   /* @GetMapping("/")
     public String main(Model model) throws JsonProcessingException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         Long boardId= 16L;
 
@@ -60,7 +60,7 @@ public class ViewController {
                 .addAttribute("plan",plan)
                 .addAttribute("places",userPlaces);
         return "index";
-    }
+    }*/
 
     // register.html 이동
     @GetMapping("/login")

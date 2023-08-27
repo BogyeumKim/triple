@@ -52,7 +52,7 @@ public class TokenServiceImpl implements TokenService{
 
         // Date to LocalDateTime and plus expires
         LocalDateTime expriesDate = LocalDateTime.ofInstant(getTokenDate.toInstant(), ZoneId.systemDefault()).plusSeconds(Expires.EXPIRES_IN);
-        log.info("expriesDate={}",expriesDate);
+        log.info("expriesDateLogin={}",expriesDate);
         boolean result = LocalDateTime.now().isAfter(expriesDate);
 
         // if Token expires
@@ -87,7 +87,7 @@ public class TokenServiceImpl implements TokenService{
 
         // Date to LocalDateTime and plus expires
         LocalDateTime expriesDate = LocalDateTime.ofInstant(getTokenDate.toInstant(), ZoneId.systemDefault()).plusSeconds(Expires.EXPIRES_IN);
-        log.info("expriesDate={}",expriesDate);
+        log.info("expriesDateValid={}",expriesDate);
         boolean result = LocalDateTime.now().isAfter(expriesDate);
 
         // if Token expires

@@ -7,11 +7,14 @@ public class RoutingDataSource extends AbstractRoutingDataSource {
 
     @Override
     protected Object determineCurrentLookupKey() {
-        boolean isReadOnly = TransactionSynchronizationManager.isCurrentTransactionReadOnly();
+     /*  boolean isReadOnly = TransactionSynchronizationManager.isCurrentTransactionReadOnly();
         if (isReadOnly) {
             return "cloude";
         } else {
             return "local";
-        }
+        }*/
+
+        return DataSourceRouting.getDbType();
+
     }
 }

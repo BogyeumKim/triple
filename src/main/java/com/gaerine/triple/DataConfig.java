@@ -58,4 +58,11 @@ public class DataConfig {
     public LazyConnectionDataSourceProxy dataSource(DataSource routingDataSource){
         return new LazyConnectionDataSourceProxy(routingDataSource);
     }
+
+    @Bean
+    public MybatisInterceptor interceptor() {
+        return new MybatisInterceptor();
+    }
+
+
 }
